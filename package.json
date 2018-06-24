@@ -1,0 +1,8 @@
+{
+  "name": "screeps",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "repository": "https://github.com/kamsac/screeps.git",
+  "author": "kamsac <kamsac@users.noreply.github.com>",
+  "license": "ISC"
+}
