@@ -2,7 +2,21 @@
   "name": "screeps",
   "version": "0.0.1",
   "main": "build/index.js",
+  "scripts": {
+    "start": "webpack -w",
+    "build": "webpack"
+  },
   "repository": "https://github.com/kamsac/screeps.git",
   "author": "kamsac <kamsac@users.noreply.github.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/screeps": "^2.3.0",
+    "ts-loader": "^4.4.1",
+    "tslint": "^5.10.0",
+    "tslint-loader": "^3.6.0",
+    "typescript": "^2.9.2",
+    "webpack": "^4.12.1",
+    "webpack-cli": "^3.0.8"
+  }
 }
