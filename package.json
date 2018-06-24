@@ -4,12 +4,16 @@
   "main": "build/index.js",
   "scripts": {
     "start": "webpack -w",
-    "build": "webpack"
+    "build": "webpack",
+    "upload": "node ./upload-screeps-code.js --server main --branch master",
+    "upload:sim": "node ./upload-screeps-code.js --server main --branch sim"
   },
   "repository": "https://github.com/kamsac/screeps.git",
   "author": "kamsac <kamsac@users.noreply.github.com>",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "screeps-api": "^1.6.1"
+  },
   "devDependencies": {
     "@types/screeps": "^2.3.0",
     "ts-loader": "^4.4.1",

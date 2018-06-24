@@ -1,1 +1,3 @@
-console.log('It works');
+export const loop = () => {
+    console.log('It works');
+};
