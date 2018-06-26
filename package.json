@@ -4,9 +4,7 @@
   "main": "build/index.js",
   "scripts": {
     "start": "webpack -w",
-    "build": "webpack",
-    "upload": "node ./upload-screeps-code.js --server main --branch master",
-    "upload:sim": "node ./upload-screeps-code.js --server main --branch sim"
+    "build": "webpack"
   },
   "repository": "https://github.com/kamsac/screeps.git",
   "author": "kamsac <kamsac@users.noreply.github.com>",
@@ -16,6 +14,7 @@
   },
   "devDependencies": {
     "@types/screeps": "^2.3.0",
+    "source-map-loader": "^0.2.3",
     "ts-loader": "^4.4.1",
     "tslint": "^5.10.0",
     "tslint-loader": "^3.6.0",
