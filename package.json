@@ -10,9 +10,12 @@
   "author": "kamsac <kamsac@users.noreply.github.com>",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.17.10",
     "screeps-api": "^1.6.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.110",
+    "@types/node": "^10.5.0",
     "@types/screeps": "^2.3.0",
     "source-map-loader": "^0.2.3",
     "ts-loader": "^4.4.1",
@@ -20,6 +23,7 @@
     "tslint-loader": "^3.6.0",
     "typescript": "^2.9.2",
     "webpack": "^4.12.1",
-    "webpack-cli": "^3.0.8"
+    "webpack-cli": "^3.0.8",
+    "webpack-sources": "^1.1.0"
   }
 }

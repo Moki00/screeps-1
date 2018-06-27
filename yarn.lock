@@ -2,6 +2,14 @@
 # yarn lockfile v1
 
 
+"@types/lodash@^4.14.110":
+  version "4.14.110"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.110.tgz#fb07498f84152947f30ea09d89207ca07123461e"
+
+"@types/node@^10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.5.0.tgz#f5b61395c09b47ac46aaa1452750c9a72b3d3673"
+
 "@types/screeps@^2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@types/screeps/-/screeps-2.3.0.tgz#adbcf5317ec2bfb27cab8862cfa07c1750471eea"

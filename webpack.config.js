@@ -1,16 +1,18 @@
 const path = require('path');
 const UploadScreepsCode = require('./upload-screeps-code-webpack-plugin');
-
+const ScreepsSourceMapWebpackPlugin = require('./screeps-source-map-webpack-plugin');
 const screepsOptions = getScreepsCliArgs();
 
 module.exports = {
   mode: 'development',
+  target: 'node',
   entry: {
     main: './src/main.ts',
   },
   output: {
     filename: '[name].js',
     path: path.join(__dirname, 'build'),
+    libraryTarget: 'commonjs2',
   },
   resolve: {
     extensions: ['.ts', '.js'],
@@ -45,9 +47,13 @@ module.exports = {
     ],
   },
   plugins: [
-    new UploadScreepsCode(screepsOptions)
+    new ScreepsSourceMapWebpackPlugin(),
+    new UploadScreepsCode(screepsOptions),
   ],
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
+  externals: {
+    'main.js.map': 'main.js.map',
+  }
 };
 
 function getScreepsCliArgs() {
