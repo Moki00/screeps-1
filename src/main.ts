@@ -1,9 +1,16 @@
+import runHarvesterRole from './roles/harvester-role';
 import runUpgraderRole from './roles/upgrader-role';
-import {spawnCreep} from './spawner';
+import {updateSpawner} from './spawner';
 import errorMapper from './utils/error-mapper';
 
 declare global {
     interface CreepMemory {
+        [key: string]: any;
+    }
+}
+
+declare global {
+    interface RoomMemory {
         [key: string]: any;
     }
 }
@@ -15,18 +22,25 @@ export const loop = () => {
 const tick: () => void = () => {
     console.log(`tick ${Game.time}`);
 
-    spawnCreep(Game.spawns.Spawn1);
+    updateSpawner(Game.spawns.Spawn1);
+    runRoles();
+    cleanCreepsMemory();
+};
 
+function runRoles(): void {
     for (const creepName in Game.creeps) {
         const creep: Creep = Game.creeps[creepName];
 
-        if (creep.memory.role === 'upgrader') {
-            runUpgraderRole(creep);
+        switch (creep.memory.role) {
+            case 'upgrader':
+                runUpgraderRole(creep);
+                break;
+            case 'harvester':
+                runHarvesterRole(creep);
+                break;
         }
     }
-
-    cleanCreepsMemory();
-};
+}
 
 function cleanCreepsMemory() {
     for (const name in Memory.creeps) {
