@@ -1,3 +1,4 @@
+import {createExtensionsContructionSites} from './constructions/extensions';
 import runHarvesterRole from './roles/harvester-role';
 import runUpgraderRole from './roles/upgrader-role';
 import {updateSpawner} from './spawner';
@@ -22,6 +23,7 @@ export const loop = () => {
 const tick: () => void = () => {
     console.log(`tick ${Game.time}`);
 
+    createExtensionsContructionSites(Game.spawns.Spawn1.room);
     updateSpawner(Game.spawns.Spawn1);
     runRoles();
     cleanCreepsMemory();
