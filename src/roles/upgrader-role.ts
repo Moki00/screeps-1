@@ -73,6 +73,7 @@ function findSomeEnergy(creep: Creep): void {
 
 function harvest(creep: Creep): void {
     const source: Source = creep.room.find(FIND_SOURCES)[0];
+    creep.say(`😞⛏`);
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
 
     if (harvestReturnCode === ERR_NOT_IN_RANGE) {
