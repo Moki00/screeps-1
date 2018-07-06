@@ -1,4 +1,5 @@
 import {createExtensionsContructionSites} from './constructions/extensions';
+import {runBuilderRole} from './roles/builder-role';
 import runHarvesterRole from './roles/harvester-role';
 import runUpgraderRole from './roles/upgrader-role';
 import {updateSpawner} from './spawner';
@@ -39,6 +40,9 @@ function runRoles(): void {
                 break;
             case 'harvester':
                 runHarvesterRole(creep);
+                break;
+            case 'builder':
+                runBuilderRole(creep);
                 break;
         }
     }

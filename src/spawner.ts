@@ -1,10 +1,14 @@
 export function updateSpawner(spawn: StructureSpawn) {
-    if (howManyCreepsShouldISpawn(spawn, 'upgrader') > 0) {
-        spawnUpgraderCreep(spawn);
+    if (howManyCreepsShouldISpawn(spawn, 'builder') > 0) {
+        spawnBuilderCreep(spawn);
     }
 
     if (howManyCreepsShouldISpawn(spawn, 'harvester') > 0) {
         spawnHarvesterCreep(spawn);
+    }
+
+    if (howManyCreepsShouldISpawn(spawn, 'upgrader') > 0) {
+        spawnUpgraderCreep(spawn);
     }
 }
 
@@ -29,6 +33,16 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
     });
 }
 
+function spawnBuilderCreep(spawn: StructureSpawn): void {
+    const name = `Builder-${Game.time}`;
+
+    spawn.spawnCreep([WORK, CARRY, MOVE], name, {
+        memory: {
+            role: 'builder',
+        },
+    });
+}
+
 function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
     const neededRolesByRCL: {
         [role: string]: {
@@ -38,9 +52,14 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
         upgrader: {
             1: 4,
             2: 3,
-            3: 1,
+            3: 4,
         },
         harvester: {
+            1: 1,
+            2: 1,
+            3: 1,
+        },
+        builder: {
             1: 1,
             2: 1,
             3: 1,
