@@ -10,9 +10,10 @@ export default function runHarvesterRole(creep: Creep): void {
         }
         case ERR_NOT_IN_RANGE: {
             creep.say(`🙂👉⛏⚡`);
-            const containerPosition: RoomPosition | null = getSourceContainerPos(source);
-            if (containerPosition) {
-                creep.moveTo(containerPosition);
+            const container: StructureContainer | null =
+                getSourceContainerOrConstructionSite<StructureContainer>(source);
+            if (container) {
+                creep.moveTo(container);
             } else {
                 creep.moveTo(source);
             }
@@ -28,12 +29,25 @@ function buildContainer(creep: Creep, source: Source) {
 
     if (!doesSourceHasContainer(source)) {
         const position: RoomPosition = creep.pos;
-        position.createConstructionSite(STRUCTURE_CONTAINER);
+        const createConstructionSiteReturnCode: ScreepsReturnCode =
+            position.createConstructionSite(STRUCTURE_CONTAINER);
+        if (createConstructionSiteReturnCode === OK) {
+            const constructionSite: ConstructionSite = creep.room.lookForAt(LOOK_CONSTRUCTION_SITES, position)[0];
+            source.room.memory.sources[source.id] = {
+                containerId: constructionSite.id,
+            };
+        }
+    } else {
+        const container: StructureContainer | null =
+            Game.getObjectById<StructureContainer>(creep.room.memory.sources[source.id].containerId);
+        if (container) {
+            creep.repair(container);
+        }
     }
 
     const constructionSites: ConstructionSite[] = creep.room.lookForAt(LOOK_CONSTRUCTION_SITES, creep.pos);
-    if (constructionSites.length) {
-        creep.say('🙂⛏⚡🔨🗑');
+    if (constructionSites.length && creep.carry.energy >= 5) {
+        creep.say('🙂🔨🗑');
         creep.build(constructionSites[0]);
     }
 }
@@ -58,7 +72,7 @@ function initRoomSpawnsMemory(room: Room): void {
     });
 }
 
-function getSourceContainerPos(source: Source): RoomPosition | null {
+function getSourceContainerOrConstructionSite<StructureType>(source: Source): StructureType | null {
     if (!source.room.memory.sources) {
         return null;
     }
@@ -67,15 +81,9 @@ function getSourceContainerPos(source: Source): RoomPosition | null {
         return null;
     }
 
-    const containerId: string = source.room.memory.sources[source.id].containerId;
+    const containerOrConstructionSiteId: string = source.room.memory.sources[source.id].containerId;
 
-    const container: _HasRoomPosition | null = Game.getObjectById(containerId);
-
-    if (!container) {
-        return null;
-    }
-
-    return container.pos;
+    return Game.getObjectById<StructureType>(containerOrConstructionSiteId);
 }
 
 function getEnergySource(room: Room): Source {
