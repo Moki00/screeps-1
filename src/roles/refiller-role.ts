@@ -141,5 +141,7 @@ function build(creep: Creep): void {
 
     if (creep.carry.energy === 0) {
         creep.memory.state = RefillerRoleState.FIND_ENERGY;
+    } else {
+        creep.memory.state = RefillerRoleState.REFILL;
     }
 }
