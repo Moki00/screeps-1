@@ -26,10 +26,11 @@ export default function runRefillerRole(creep: Creep): void {
 
 function refillEnergy(creep: Creep): void {
     if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
-        const refillTarget: Structure | null = getRoomEnergyRefillTarget(creep);
+        const refillTarget: StructureSpawn | StructureExtension | null = getRoomEnergyRefillTarget(creep);
         if (refillTarget) {
+            const energyToFull: number = refillTarget.energyCapacity - refillTarget.energy;
             const transferReturnCode: ScreepsReturnCode =
-                creep.transfer(refillTarget, RESOURCE_ENERGY, creep.carry.energy);
+                creep.transfer(refillTarget, RESOURCE_ENERGY, Math.min(creep.carry.energy, energyToFull));
             switch (transferReturnCode) {
                 case OK:
                     creep.say('😌🔝');
@@ -51,7 +52,7 @@ function refillEnergy(creep: Creep): void {
     }
 }
 
-function getRoomEnergyRefillTarget(creep: Creep): Structure | null {
+function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExtension | null {
     const spawns: StructureSpawn[] = creep.room
         .find(FIND_MY_SPAWNS)
         .filter((spawn) => spawn.energy < spawn.energyCapacity)
@@ -69,8 +70,6 @@ function getRoomEnergyRefillTarget(creep: Creep): Structure | null {
                 structure.energy < structure.energyCapacity
             );
         });
-
-    console.log(extensions.length);
 
     if (extensions.length) {
         return extensions[0];
@@ -97,6 +96,8 @@ function findEnergy(creep: Creep): void {
                 creep.moveTo(mostFilledContainer);
                 break;
         }
+    } else {
+        creep.memory.state = RefillerRoleState.HARVEST;
     }
 
     if (creep.carry.energy === creep.carryCapacity) {
