@@ -3,7 +3,7 @@ enum BuilderRoleState {
     FIND_ENERGY,
 }
 
-export function runBuilderRole(creep: Creep): void {
+export default function runBuilderRole(creep: Creep): void {
     switch (creep.memory.state) {
         case BuilderRoleState.BUILD:
             build(creep);
@@ -27,6 +27,8 @@ function build(creep: Creep): void {
                 creep.moveTo(constructionSites[0]);
                 break;
         }
+    } else {
+        creep.say('💤');
     }
 
     if (creep.carry.energy === 0) {

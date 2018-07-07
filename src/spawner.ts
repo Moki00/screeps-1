@@ -1,4 +1,8 @@
 export function updateSpawner(spawn: StructureSpawn) {
+    if (howManyCreepsShouldISpawn(spawn, 'refiller') > 0) {
+        spawnRefillerCreep(spawn);
+    }
+
     if (howManyCreepsShouldISpawn(spawn, 'builder') > 0) {
         spawnBuilderCreep(spawn);
     }
@@ -43,6 +47,16 @@ function spawnBuilderCreep(spawn: StructureSpawn): void {
     });
 }
 
+function spawnRefillerCreep(spawn: StructureSpawn): void {
+    const name = `Refiller-${Game.time}`;
+
+    spawn.spawnCreep([WORK, CARRY, MOVE], name, {
+        memory: {
+            role: 'refiller',
+        },
+    });
+}
+
 function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
     const neededRolesByRCL: {
         [role: string]: {
@@ -52,17 +66,27 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
         upgrader: {
             1: 4,
             2: 3,
-            3: 4,
+            3: 2,
+            4: 2,
         },
         harvester: {
             1: 1,
             2: 1,
             3: 1,
+            4: 1,
         },
         builder: {
             1: 1,
             2: 1,
             3: 1,
+            4: 1,
+
+        },
+        refiller: {
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 1,
         },
     };
 
