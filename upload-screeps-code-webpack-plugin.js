@@ -14,12 +14,20 @@ UploadScreepsCodeWebpackPlugin.prototype.apply = function(options, compiler) {
     }
 
     ScreepsAPI.fromConfig(options.server)
+      .then((api) => authWithoutToken(api))
       .then((api) => onAuthSuccess(api, options, sourcesByFiles))
       .catch(onAuthFailure);
 
     callback();
   });
 };
+
+function authWithoutToken(api) {
+  if (!api.opts.token) {
+    api.auth();
+  }
+  return api;
+}
 
 function onUploadSuccess(api, {server, branch}) {
   console.log(`[UploadScreepsCodeWebpackPlugin] Code has been uploaded:   server: ${server}    branch: ${branch}`);

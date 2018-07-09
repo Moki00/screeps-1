@@ -4,6 +4,7 @@ const fs = require('fs');
 const args = getCliArgs();
 
 ScreepsAPI.fromConfig(args.server)
+  .then((api) => authWithoutToken(api))
   .then((api) => onAuthSuccess(api, args))
   .catch(onAuthFailure);
 
@@ -58,6 +59,13 @@ function getCliArgs() {
   return niceArgs;
 }
 
+function authWithoutToken(api) {
+  if (!api.opts.token) {
+    api.auth();
+  }
+  return api;
+}
+
 function onAuthSuccess(api, args) {
   upload(api, args);
 }
@@ -67,15 +75,16 @@ function onAuthFailure(error) {
 }
 
 function upload(api, args) {
-  api.code.set(args.branch, {
-    main: getBuildFile(),
-  })
+  api.code.set(args.branch, getBuildFiles())
     .then(onUploadSuccess(args))
     .catch(onUploadFailure);
 }
 
-function getBuildFile() {
-  return fs.readFileSync('./build/main.js', 'utf8');
+function getBuildFiles() {
+  return {
+    main: fs.readFileSync('./build/main.js', 'utf8'),
+    'main.js.map': fs.readFileSync('./build/main.js.map', 'utf8')
+  };
 }
 
 function onUploadSuccess({server, branch}) {
