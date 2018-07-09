@@ -1,4 +1,6 @@
 import {createExtensionsContructionSites} from './constructions/extensions';
+import updateHarvestBases from './constructions/harvest-base';
+import RoomSourcesMemory from './constructions/room-sources-memory.interface';
 import runBuilderRole from './roles/builder-role';
 import runHarvesterRole from './roles/harvester-role';
 import runRefillerRole from './roles/refiller-role';
@@ -14,7 +16,7 @@ declare global {
 
 declare global {
     interface RoomMemory {
-        [key: string]: any;
+        sources: RoomSourcesMemory;
     }
 }
 
@@ -28,6 +30,7 @@ const tick: () => void = () => {
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
     updateSpawner(Game.spawns.Spawn1);
     runRoles();
+    updateHarvestBases(Game.spawns.Spawn1.room);
     cleanCreepsMemory();
 };
 

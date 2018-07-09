@@ -1,91 +1,72 @@
+import {getAnyFreeSourceId, getHarvestingPosition, getSourceOfHarvester} from '../constructions/harvest-base';
+
 export default function runHarvesterRole(creep: Creep): void {
-    const source: Source = getEnergySource(creep.room);
+    const anyFreeSourceId: string | null = getAnyFreeSourceId(creep.room);
+
+    const source: Source | null = anyFreeSourceId
+        ?
+        Game.getObjectById(anyFreeSourceId)
+        :
+        getSourceOfHarvester(creep);
+
+    if (!source) {
+        return;
+    }
+
+    const harvestingPosition: RoomPosition | null = source.id
+        ? getHarvestingPosition(creep.room, source.id) : null;
+
+    if (!harvestingPosition) {
+        return;
+    }
 
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
     switch (harvestReturnCode) {
         case OK: {
             creep.say(`😌⛏⚡`);
-            buildContainer(creep, source);
+            takeCareOfContainerUnder(creep);
             break;
         }
         case ERR_NOT_IN_RANGE: {
             creep.say(`🙂👉⛏⚡`);
-            const container: StructureContainer | null =
-                getSourceContainerOrConstructionSite<StructureContainer>(source);
-            if (container) {
-                creep.moveTo(container);
-            } else {
-                creep.moveTo(source);
-            }
+            creep.moveTo(harvestingPosition);
             break;
         }
     }
 }
 
-function buildContainer(creep: Creep, source: Source) {
-    if (!source.room.memory.sources) {
-        initRoomSpawnsMemory(source.room);
+function takeCareOfContainerUnder(creep: Creep): void {
+    repairHarvestersContainer(creep);
+    buildHarvestersContainerConstructionSite(creep);
+}
+
+function repairHarvestersContainer(creep: Creep): void {
+    const container: StructureContainer | undefined = creep.pos.lookFor(LOOK_STRUCTURES)
+        .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
+    if (!container) {
+        return;
     }
 
-    if (!doesSourceHasContainer(source)) {
-        const position: RoomPosition = creep.pos;
-        const createConstructionSiteReturnCode: ScreepsReturnCode =
-            position.createConstructionSite(STRUCTURE_CONTAINER);
-        if (createConstructionSiteReturnCode === OK) {
-            const constructionSite: ConstructionSite = creep.room.lookForAt(LOOK_CONSTRUCTION_SITES, position)[0];
-            source.room.memory.sources[source.id] = {
-                containerId: constructionSite.id,
-            };
-        }
+    const creepRepairPower: number = creep.getActiveBodyparts(WORK) * REPAIR_POWER;
+    const constructionHitsTaken: number = container.hitsMax - container.hits;
+    if (constructionHitsTaken >= creepRepairPower) {
+        creep.say('🙂🛠🗑');
+        creep.repair(container);
     } else {
-        const container: StructureContainer | null =
-            Game.getObjectById<StructureContainer>(creep.room.memory.sources[source.id].containerId);
-        if (container) {
-            creep.repair(container);
-        }
+        creep.transfer(container, RESOURCE_ENERGY);
+    }
+}
+
+function buildHarvestersContainerConstructionSite(creep: Creep): void {
+    const constructionSite: ConstructionSite | undefined = creep.pos.lookFor(LOOK_CONSTRUCTION_SITES)
+        .find((site) => site.structureType === STRUCTURE_CONTAINER) as ConstructionSite | undefined;
+    if (!constructionSite) {
+        return;
     }
 
-    const constructionSites: ConstructionSite[] = creep.room.lookForAt(LOOK_CONSTRUCTION_SITES, creep.pos);
-    if (constructionSites.length && creep.carry.energy >= 5) {
+    const creepBuildPower: number = creep.getActiveBodyparts(WORK) * BUILD_POWER;
+    if (creep.carry.energy >= creepBuildPower) {
         creep.say('🙂🔨🗑');
-        creep.build(constructionSites[0]);
+        creep.build(constructionSite);
     }
-}
-
-function doesSourceHasContainer(source: Source): boolean {
-    return (
-        source.room.memory.sources &&
-        source.room.memory.sources[source.id] &&
-        !!source.room.memory.sources[source.id].containerId
-    );
-}
-
-function initRoomSpawnsMemory(room: Room): void {
-    const sources: Source[] = room.find(FIND_SOURCES);
-
-    room.memory.sources = {};
-
-    sources.forEach((source) => {
-        room.memory.sources[source.id] = {
-            containerId: null,
-        };
-    });
-}
-
-function getSourceContainerOrConstructionSite<StructureType>(source: Source): StructureType | null {
-    if (!source.room.memory.sources) {
-        return null;
-    }
-
-    if (!source.room.memory.sources[source.id]) {
-        return null;
-    }
-
-    const containerOrConstructionSiteId: string = source.room.memory.sources[source.id].containerId;
-
-    return Game.getObjectById<StructureType>(containerOrConstructionSiteId);
-}
-
-function getEnergySource(room: Room): Source {
-    return room.find(FIND_SOURCES)[0];
 }

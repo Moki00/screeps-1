@@ -9,7 +9,8 @@
     "strict": true,
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "lib": ["es2017"]
   },
   "exclude": [
     "node_modules",

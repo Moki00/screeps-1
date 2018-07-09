@@ -1,3 +1,5 @@
+import {getAnyFreeSourceId} from './constructions/harvest-base';
+
 export function updateSpawner(spawn: StructureSpawn) {
     if (howManyCreepsShouldISpawn(spawn, 'refiller') > 0) {
         spawnRefillerCreep(spawn);
@@ -7,7 +9,7 @@ export function updateSpawner(spawn: StructureSpawn) {
         spawnBuilderCreep(spawn);
     }
 
-    if (howManyCreepsShouldISpawn(spawn, 'harvester') > 0) {
+    if (doINeedHarvester(spawn.room)) {
         spawnHarvesterCreep(spawn);
     }
 
@@ -30,9 +32,10 @@ function spawnUpgraderCreep(spawn: StructureSpawn): void {
 function spawnHarvesterCreep(spawn: StructureSpawn): void {
     const name = `Harvester-${Game.time}`;
 
-    spawn.spawnCreep([WORK, CARRY, MOVE], name, {
+    spawn.spawnCreep([WORK, WORK, CARRY, MOVE], name, {
         memory: {
             role: 'harvester',
+            targetSourceId: getAnyFreeSourceId(spawn.room),
         },
     });
 }
@@ -57,6 +60,10 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
     });
 }
 
+function doINeedHarvester(room: Room): boolean {
+    return !!getAnyFreeSourceId(room);
+}
+
 function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
     const neededRolesByRCL: {
         [role: string]: {
@@ -64,8 +71,8 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
         },
     } = {
         upgrader: {
-            1: 4,
-            2: 3,
+            1: 2,
+            2: 2,
             3: 2,
             4: 2,
         },
