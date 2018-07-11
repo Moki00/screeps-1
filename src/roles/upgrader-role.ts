@@ -1,10 +1,10 @@
+import {getUpgradingPosition} from '../constructions/upgrade-base';
+
 enum UpgraderRoleState {
     UPGRADE,
     FIND_ENERGY,
     HARVEST,
 }
-
-const IDLE_PATIENCE: number = 5;
 
 function runUpgradeController(creep: Creep) {
     switch (creep.memory.state) {
@@ -24,34 +24,61 @@ function runUpgradeController(creep: Creep) {
 
 function upgrade(creep: Creep): void {
     const controller: StructureController | undefined = creep.room.controller;
-    if (controller) {
+
+    const upgradingPosition: RoomPosition | null = getUpgradingPosition(creep.room);
+
+    if (controller && upgradingPosition) {
+        if (!isUpgraderOnPlace(creep.room)) {
+            creep.moveTo(upgradingPosition);
+        } else {
+            const container: StructureContainer | undefined = creep.pos.lookFor(LOOK_STRUCTURES)
+                .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
+            if (container) {
+                creep.withdraw(container, RESOURCE_ENERGY);
+            }
+        }
+
         const upgradeReturnCode: ScreepsReturnCode = creep.upgradeController(controller);
-
-        creep.memory.ticksSinceLastUpgrade += 1;
-
         switch (upgradeReturnCode) {
             case OK: {
                 creep.say(`😌🔝`);
-                creep.memory.ticksSinceLastUpgrade = 0;
                 break;
             }
             case ERR_NOT_IN_RANGE: {
                 creep.say(`🙂👉🔝`);
-                creep.moveTo(controller);
                 break;
             }
             case ERR_NOT_ENOUGH_ENERGY: {
-                if (creep.memory.ticksSinceLastUpgrade >= IDLE_PATIENCE) {
-                    creep.memory.state = UpgraderRoleState.FIND_ENERGY;
-                } else {
-                    const waitTime: number = IDLE_PATIENCE - creep.memory.ticksSinceLastUpgrade;
-                    creep.say(`😒🚫⚡⌛${waitTime}`);
-                }
+                creep.memory.state = UpgraderRoleState.FIND_ENERGY;
                 break;
             }
         }
 
     }
+}
+
+function isUpgraderOnPlace(room: Room): boolean {
+    const upgrader: Creep | undefined = room
+        .find(FIND_MY_CREEPS)
+        .find((creep) => creep.memory.role === 'upgrader');
+
+    if (!upgrader) {
+        return false;
+    }
+
+    if (
+        !upgrader.room.memory.controller ||
+        !upgrader.room.memory.controller.upgradingPosition ||
+        !upgrader.room.memory.controller.upgradingPosition.x ||
+        !upgrader.room.memory.controller.upgradingPosition.y
+    ) {
+        return false;
+    }
+
+    return (
+        upgrader.pos.x === upgrader.room.memory.controller.upgradingPosition.x &&
+        upgrader.pos.y === upgrader.room.memory.controller.upgradingPosition.y
+    );
 }
 
 function findSomeEnergy(creep: Creep): void {

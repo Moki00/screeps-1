@@ -13,7 +13,7 @@ export function updateSpawner(spawn: StructureSpawn) {
         spawnHarvesterCreep(spawn);
     }
 
-    if (howManyCreepsShouldISpawn(spawn, 'upgrader') > 0) {
+    if (doINeedUpgrader(spawn.room)) {
         spawnUpgraderCreep(spawn);
     }
 }
@@ -24,7 +24,6 @@ function spawnUpgraderCreep(spawn: StructureSpawn): void {
     spawn.spawnCreep([WORK, CARRY, MOVE], name, {
         memory: {
             role: 'upgrader',
-            ticksSinceLastUpgrade: 0,
         },
     });
 }
@@ -60,6 +59,12 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
     });
 }
 
+function doINeedUpgrader(room: Room): boolean {
+    return !room
+        .find(FIND_MY_CREEPS)
+        .find((creep) => creep.memory.role === 'upgrader');
+}
+
 function doINeedHarvester(room: Room): boolean {
     return !!getAnyFreeSourceId(room);
 }
@@ -70,18 +75,6 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
             [rcl: number]: number,
         },
     } = {
-        upgrader: {
-            1: 2,
-            2: 2,
-            3: 2,
-            4: 2,
-        },
-        harvester: {
-            1: 1,
-            2: 1,
-            3: 1,
-            4: 1,
-        },
         builder: {
             1: 1,
             2: 1,

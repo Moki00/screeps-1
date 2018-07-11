@@ -1,5 +1,8 @@
+import {getUpgraderContainer, getUpgradingPosition} from '../constructions/upgrade-base';
+
 enum RefillerRoleState {
     REFILL,
+    REFILL_UPGRADER,
     FIND_ENERGY,
     HARVEST,
     BUILD,
@@ -9,6 +12,9 @@ export default function runRefillerRole(creep: Creep): void {
     switch (creep.memory.state) {
         case RefillerRoleState.REFILL:
             refillEnergy(creep);
+            break;
+        case RefillerRoleState.REFILL_UPGRADER:
+            refillUpgrader(creep);
             break;
         case RefillerRoleState.FIND_ENERGY:
             findEnergy(creep);
@@ -36,15 +42,48 @@ function refillEnergy(creep: Creep): void {
                     creep.say('😌🔝');
                     break;
                 case ERR_NOT_IN_RANGE:
-                    creep.say('😌👉🔝');
+                    creep.say('🙂👉🔝');
                     creep.moveTo(refillTarget);
                     break;
             }
         } else {
-            creep.memory.state = RefillerRoleState.BUILD;
+            creep.memory.state = RefillerRoleState.REFILL_UPGRADER;
         }
     } else {
+        creep.memory.state = RefillerRoleState.REFILL_UPGRADER;
+    }
+
+    if (creep.carry.energy === 0) {
+        creep.memory.state = RefillerRoleState.FIND_ENERGY;
+    }
+}
+
+function refillUpgrader(creep: Creep): void {
+    const upgradingPosition: RoomPosition | null = getUpgradingPosition(creep.room);
+
+    if (!upgradingPosition) {
         creep.memory.state = RefillerRoleState.BUILD;
+        return;
+    }
+
+    const container: StructureContainer | null = getUpgraderContainer(creep.room);
+
+    if (!container) {
+        creep.memory.state = RefillerRoleState.BUILD;
+        return;
+    }
+
+    const energyToFull: number = container.storeCapacity - container.store.energy;
+    const transferReturnCode: ScreepsReturnCode =
+        creep.transfer(container, RESOURCE_ENERGY, Math.min(creep.carry.energy, energyToFull));
+    switch (transferReturnCode) {
+        case OK:
+            creep.say('😌🔝');
+            break;
+        case ERR_NOT_IN_RANGE:
+            creep.say('😌👉🔝');
+            creep.moveTo(container);
+            break;
     }
 
     if (creep.carry.energy === 0) {
