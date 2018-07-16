@@ -4,19 +4,25 @@
   "main": "build/index.js",
   "scripts": {
     "start": "webpack -w",
-    "build": "webpack"
+    "build": "webpack",
+    "test": "jest --verbose",
+    "test:watch": "jest --verbose --watch"
   },
   "repository": "https://github.com/kamsac/screeps.git",
   "author": "kamsac <kamsac@users.noreply.github.com>",
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.10",
-    "screeps-api": "^1.6.1"
+    "screeps-api": "^1.6.1",
+    "ts-jest": "^23.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^23.1.6",
     "@types/lodash": "^4.14.110",
     "@types/node": "^10.5.0",
     "@types/screeps": "^2.3.0",
+    "jest": "^23.4.1",
+    "screeps": "^3.0.0",
     "source-map-loader": "^0.2.3",
     "ts-loader": "^4.4.1",
     "tslint": "^5.10.0",
