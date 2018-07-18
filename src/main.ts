@@ -7,7 +7,7 @@ import runBuilderRole from './roles/builder-role';
 import runHarvesterRole from './roles/harvester-role';
 import runRefillerRole from './roles/refiller-role';
 import runUpgraderRole from './roles/upgrader-role';
-import {updateSpawner} from './spawner';
+import {updateSpawner} from './spawner/spawner';
 import errorMapper from './utils/error-mapper';
 
 declare global {

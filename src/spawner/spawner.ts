@@ -1,6 +1,10 @@
-import {getAnyFreeSourceId} from './constructions/harvest-base';
+import {getAnyFreeSourceId} from '../constructions/harvest-base';
+import stripBodyParts from './helpers/strip-body-parts';
 
 export function updateSpawner(spawn: StructureSpawn) {
+    if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
+        return;
+    }
     if (howManyCreepsShouldISpawn(spawn, 'refiller') > 0) {
         spawnRefillerCreep(spawn);
     }
@@ -21,17 +25,40 @@ export function updateSpawner(spawn: StructureSpawn) {
 function spawnUpgraderCreep(spawn: StructureSpawn): void {
     const name = `Upgrader-${Game.time}`;
 
-    spawn.spawnCreep([WORK, CARRY, MOVE], name, {
-        memory: {
-            role: 'upgrader',
+    spawn.spawnCreep(
+        stripBodyParts([MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, WORK, WORK, MOVE, CARRY],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+                fatigue: {
+                    max: 4,
+                    ignoreCarry: true,
+                },
+            },
+        ),
+        name,
+        {
+            memory: {
+                role: 'upgrader',
+            },
         },
-    });
+    );
 }
 
 function spawnHarvesterCreep(spawn: StructureSpawn): void {
     const name = `Harvester-${Game.time}`;
 
-    spawn.spawnCreep([WORK, WORK, CARRY, MOVE], name, {
+    spawn.spawnCreep(
+        stripBodyParts(
+            [WORK, WORK, CARRY, MOVE],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+                fatigue: {
+                    ignoreCarry: true,
+                },
+            },
+        ),
+        name,
+        {
         memory: {
             role: 'harvester',
             targetSourceId: getAnyFreeSourceId(spawn.room),
@@ -52,7 +79,13 @@ function spawnBuilderCreep(spawn: StructureSpawn): void {
 function spawnRefillerCreep(spawn: StructureSpawn): void {
     const name = `Refiller-${Game.time}`;
 
-    spawn.spawnCreep([WORK, CARRY, MOVE], name, {
+    spawn.spawnCreep(
+        stripBodyParts([MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+            },
+        ),
+        name, {
         memory: {
             role: 'refiller',
         },
@@ -80,6 +113,7 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
             2: 1,
             3: 1,
             4: 1,
+            5: 1,
 
         },
         refiller: {
@@ -87,6 +121,7 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
             2: 1,
             3: 1,
             4: 1,
+            5: 1,
         },
     };
 
@@ -102,6 +137,5 @@ function howManyCreepsShouldISpawn(spawn: StructureSpawn, role: string): number 
         filter: (creep: Creep) => creep.memory.role === role,
     }).length;
     const howManyDoINeed: number = howManyCreepsDoINeedInRoom(role, spawn.room);
-    // console.log(`role: ${role}; have: ${howManyDoIHave}; need: ${howManyDoINeed};`)
     return howManyDoINeed - howManyDoIHave;
 }
