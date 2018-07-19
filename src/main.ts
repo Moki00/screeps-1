@@ -31,10 +31,10 @@ const tick: () => void = () => {
     console.log(`tick ${Game.time}`);
 
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
-    updateSpawner(Game.spawns.Spawn1);
-    runRoles();
     updateHarvestBases(Game.spawns.Spawn1.room);
     updateUpgradeBase(Game.spawns.Spawn1.room);
+    updateSpawner(Game.spawns.Spawn1);
+    runRoles();
     cleanCreepsMemory();
 };
 
