@@ -1,5 +1,5 @@
 import { escape } from 'lodash';
-import { MappedPosition, SourceMapConsumer } from 'source-map';
+import { MappedPosition, SourceMapConsumer } from 'source-map'; // leave it at version ^0.6.1. ^0.7 is async only.
 
 export default function errorMapper(tick: () => void): () => void {
     return () => {
