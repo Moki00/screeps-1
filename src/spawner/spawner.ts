@@ -5,9 +5,6 @@ export function updateSpawner(spawn: StructureSpawn) {
     if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
         return;
     }
-    if (howManyCreepsShouldISpawn(spawn, 'refiller') > 0) {
-        spawnRefillerCreep(spawn);
-    }
 
     if (howManyCreepsShouldISpawn(spawn, 'builder') > 0) {
         spawnBuilderCreep(spawn);
@@ -19,6 +16,10 @@ export function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedUpgrader(spawn.room)) {
         spawnUpgraderCreep(spawn);
+    }
+
+    if (howManyCreepsShouldISpawn(spawn, 'refiller') > 0) {
+        spawnRefillerCreep(spawn);
     }
 }
 
