@@ -1,4 +1,5 @@
 import {getUpgraderContainer, getUpgradingPosition} from '../constructions/upgrade-base';
+import {refillerPathStyle} from '../visuals';
 
 enum RefillerRoleState {
     REFILL,
@@ -43,7 +44,9 @@ function refillEnergy(creep: Creep): void {
                     break;
                 case ERR_NOT_IN_RANGE:
                     creep.say('🙂👉🔝');
-                    creep.moveTo(refillTarget);
+                    creep.moveTo(refillTarget, {
+                        visualizePathStyle: refillerPathStyle,
+                    });
                     break;
             }
         } else {
@@ -82,7 +85,9 @@ function refillUpgrader(creep: Creep): void {
             break;
         case ERR_NOT_IN_RANGE:
             creep.say('😌👉🔝');
-            creep.moveTo(container);
+            creep.moveTo(container, {
+                visualizePathStyle: refillerPathStyle,
+            });
             break;
     }
 
@@ -132,7 +137,9 @@ function findEnergy(creep: Creep): void {
         switch (withdrawReturnCode) {
             case ERR_NOT_IN_RANGE:
                 creep.say('🙂👉🔎⚡');
-                creep.moveTo(mostFilledContainer);
+                creep.moveTo(mostFilledContainer, {
+                    visualizePathStyle: refillerPathStyle,
+                });
                 break;
         }
     } else {
@@ -151,7 +158,9 @@ function harvest(creep: Creep): void {
 
     if (harvestReturnCode === ERR_NOT_IN_RANGE) {
         creep.say(`😞👉⛏`);
-        creep.moveTo(source);
+        creep.moveTo(source, {
+            visualizePathStyle: refillerPathStyle,
+        });
     }
 
     if (creep.carry.energy >= creep.carryCapacity) {
@@ -171,7 +180,9 @@ function build(creep: Creep): void {
                 break;
             case ERR_NOT_IN_RANGE:
                 creep.say('😒👉⚒');
-                creep.moveTo(constructionSites[0]);
+                creep.moveTo(constructionSites[0], {
+                    visualizePathStyle: refillerPathStyle,
+                });
                 break;
         }
     } else {

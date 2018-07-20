@@ -1,4 +1,5 @@
 import {getUpgraderContainer} from '../constructions/upgrade-base';
+import {builderPathStyle} from '../visuals';
 
 enum BuilderRoleState {
     BUILD,
@@ -34,7 +35,9 @@ function build(creep: Creep): void {
                 break;
             case ERR_NOT_IN_RANGE:
                 creep.say('🙂👉🔨🗑');
-                creep.moveTo(constructionSites[0]);
+                creep.moveTo(constructionSites[0], {
+                    visualizePathStyle: builderPathStyle,
+                });
                 break;
         }
     } else {
@@ -59,7 +62,9 @@ function findEnergy(creep: Creep): void {
             creep.withdraw(mostFilledContainer, RESOURCE_ENERGY, creep.carryCapacity);
         switch (withdrawReturnCode) {
             case ERR_NOT_IN_RANGE:
-                creep.moveTo(mostFilledContainer);
+                creep.moveTo(mostFilledContainer, {
+                    visualizePathStyle: builderPathStyle,
+                });
                 break;
         }
     }
@@ -84,7 +89,9 @@ function repairUpgradeContainer(creep: Creep): void {
             break;
         case ERR_NOT_IN_RANGE:
             creep.say('🙂👉🛠🗑');
-            creep.moveTo(container);
+            creep.moveTo(container, {
+                visualizePathStyle: builderPathStyle,
+            });
             break;
     }
 

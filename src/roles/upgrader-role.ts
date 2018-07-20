@@ -1,4 +1,5 @@
 import {getUpgradingPosition} from '../constructions/upgrade-base';
+import {upgraderPathStyle} from '../visuals';
 
 enum UpgraderRoleState {
     UPGRADE,
@@ -29,7 +30,9 @@ function upgrade(creep: Creep): void {
 
     if (controller && upgradingPosition) {
         if (!isUpgraderOnPlace(creep.room)) {
-            creep.moveTo(upgradingPosition);
+            creep.moveTo(upgradingPosition, {
+                visualizePathStyle: upgraderPathStyle,
+            });
         } else {
             const container: StructureContainer | undefined = creep.pos.lookFor(LOOK_STRUCTURES)
                 .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
@@ -105,7 +108,9 @@ function harvest(creep: Creep): void {
 
     if (harvestReturnCode === ERR_NOT_IN_RANGE) {
         creep.say(`😞👉⛏`);
-        creep.moveTo(source);
+        creep.moveTo(source, {
+            visualizePathStyle: upgraderPathStyle,
+        });
     }
 
     if (creep.carry.energy >= creep.carryCapacity) {

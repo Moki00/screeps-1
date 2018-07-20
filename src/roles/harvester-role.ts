@@ -1,4 +1,5 @@
 import {getAnyFreeSourceId, getHarvestingPosition, getSourceOfHarvester} from '../constructions/harvest-base';
+import {harvesterPathStyle} from '../visuals';
 
 export default function runHarvesterRole(creep: Creep): void {
     const anyFreeSourceId: string | null = getAnyFreeSourceId(creep.room);
@@ -29,7 +30,9 @@ export default function runHarvesterRole(creep: Creep): void {
         }
         case ERR_NOT_IN_RANGE: {
             creep.say(`🙂👉⛏⚡`);
-            creep.moveTo(harvestingPosition);
+            creep.moveTo(harvestingPosition, {
+                visualizePathStyle: harvesterPathStyle,
+            });
             break;
         }
     }
