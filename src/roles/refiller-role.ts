@@ -32,25 +32,22 @@ export default function runRefillerRole(creep: Creep): void {
 }
 
 function refillEnergy(creep: Creep): void {
-    if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
-        const refillTarget: StructureSpawn | StructureExtension | null = getRoomEnergyRefillTarget(creep);
-        if (refillTarget) {
-            const energyToFull: number = refillTarget.energyCapacity - refillTarget.energy;
-            const transferReturnCode: ScreepsReturnCode =
-                creep.transfer(refillTarget, RESOURCE_ENERGY, Math.min(creep.carry.energy, energyToFull));
-            switch (transferReturnCode) {
-                case OK:
-                    creep.say('😌🔝');
-                    break;
-                case ERR_NOT_IN_RANGE:
-                    creep.say('🙂👉🔝');
-                    creep.moveTo(refillTarget, {
-                        visualizePathStyle: refillerPathStyle,
-                    });
-                    break;
-            }
-        } else {
-            creep.memory.state = RefillerRoleState.REFILL_UPGRADER;
+    const refillTarget: StructureSpawn | StructureExtension | StructureTower | null =
+        getRoomEnergyRefillTarget(creep);
+    if (refillTarget) {
+        const energyToFull: number = refillTarget.energyCapacity - refillTarget.energy;
+        const transferReturnCode: ScreepsReturnCode =
+            creep.transfer(refillTarget, RESOURCE_ENERGY, Math.min(creep.carry.energy, energyToFull));
+        switch (transferReturnCode) {
+            case OK:
+                creep.say('😌🔝');
+                break;
+            case ERR_NOT_IN_RANGE:
+                creep.say('🙂👉🔝');
+                creep.moveTo(refillTarget, {
+                    visualizePathStyle: refillerPathStyle,
+                });
+                break;
         }
     } else {
         creep.memory.state = RefillerRoleState.REFILL_UPGRADER;
@@ -96,7 +93,7 @@ function refillUpgrader(creep: Creep): void {
     }
 }
 
-function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExtension | null {
+function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExtension | StructureTower | null {
     const spawns: StructureSpawn[] = creep.room
         .find(FIND_MY_SPAWNS)
         .filter((spawn) => spawn.energy < spawn.energyCapacity)
@@ -106,17 +103,31 @@ function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExte
         return spawns[0];
     }
 
-    const extensions: StructureExtension[] = creep.room
-        .find<StructureExtension>(FIND_STRUCTURES)
+    const structures: AnyStructure[] = creep.room
+        .find(FIND_STRUCTURES);
+
+    const extensions: StructureExtension[] = structures
         .filter((structure) => {
             return (
                 structure.structureType === STRUCTURE_EXTENSION &&
                 structure.energy < structure.energyCapacity
             );
-        });
+        }) as StructureExtension[];
 
     if (extensions.length) {
         return extensions[0];
+    }
+
+    const towers: StructureTower[] = structures
+        .filter((structure) => {
+            return (
+                structure.structureType === STRUCTURE_TOWER &&
+                structure.energy < structure.energyCapacity
+            );
+        }) as StructureTower[];
+
+    if (towers.length) {
+        return towers[0];
     }
 
     return null;
