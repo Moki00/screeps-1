@@ -95,6 +95,10 @@ function repairUpgradeContainer(creep: Creep): void {
             break;
     }
 
+    if (creep.room.find(FIND_CONSTRUCTION_SITES)) {
+        creep.memory.state = BuilderRoleState.BUILD;
+    }
+
     if (creep.carry.energy === 0) {
         creep.memory.state = BuilderRoleState.FIND_ENERGY;
     }
