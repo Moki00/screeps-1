@@ -1,4 +1,4 @@
-export function createExtensionsContructionSites(room: Room): void {
+export default function createExtensionsContructionSites(room: Room): void {
     const spawns: StructureSpawn[] = room.find(FIND_MY_SPAWNS);
 
     spawns.forEach((spawn) => {

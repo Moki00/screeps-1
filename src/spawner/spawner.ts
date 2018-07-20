@@ -1,7 +1,7 @@
 import {getAnyFreeSourceId} from '../constructions/harvest-base';
 import stripBodyParts from './helpers/strip-body-parts';
 
-export function updateSpawner(spawn: StructureSpawn) {
+export default function updateSpawner(spawn: StructureSpawn) {
     if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
         return;
     }
