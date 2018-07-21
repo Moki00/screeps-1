@@ -26,6 +26,7 @@ export default function runHarvesterRole(creep: Creep): void {
         case OK: {
             creep.say(`😌⛏⚡`);
             takeCareOfContainerUnder(creep);
+            saveDroppedEnergy(creep);
             break;
         }
         case ERR_NOT_IN_RANGE: {
@@ -72,4 +73,14 @@ function buildHarvestersContainerConstructionSite(creep: Creep): void {
         creep.say('🙂🔨🗑');
         creep.build(constructionSite);
     }
+}
+
+function saveDroppedEnergy(creep: Creep) {
+    const energyResource: Resource | undefined = creep.pos.lookFor(LOOK_RESOURCES)
+        .find((resource) => resource.resourceType === RESOURCE_ENERGY) as Resource | undefined;
+    if (!energyResource) {
+        return;
+    }
+
+    creep.pickup(energyResource);
 }
