@@ -165,6 +165,9 @@ function findEnergy(creep: Creep): void {
                     visualizePathStyle: refillerPathStyle,
                 });
                 break;
+            case ERR_NOT_ENOUGH_RESOURCES:
+                creep.memory.state = RefillerRoleState.HARVEST;
+                break;
         }
     } else {
         creep.memory.state = RefillerRoleState.HARVEST;
