@@ -137,7 +137,20 @@ function findEnergy(creep: Creep): void {
     creep.say('🙂🔎⚡');
     const containers: StructureContainer[] = creep.room
         .find<StructureContainer>(FIND_STRUCTURES)
-        .filter((structure) => structure.structureType === STRUCTURE_CONTAINER)
+        .filter((structure) => {
+            const isItHarvestersContainer: boolean = !!Object.values(creep.room.memory.sources)
+                .find((sourceBase) => {
+                    return (
+                        sourceBase.harvestingPosition!.x === structure.pos.x &&
+                        sourceBase.harvestingPosition!.y === structure.pos.y
+                    );
+                });
+
+            return (
+                structure.structureType === STRUCTURE_CONTAINER &&
+                isItHarvestersContainer
+            );
+        })
         .sort((a, b) => b.store.energy - a.store.energy);
 
     if (containers.length) {
