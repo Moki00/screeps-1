@@ -21,6 +21,10 @@ export default function runHarvesterRole(creep: Creep): void {
         return;
     }
 
+    creep.moveTo(harvestingPosition, {
+        visualizePathStyle: harvesterPathStyle,
+    });
+
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
     switch (harvestReturnCode) {
         case OK: {
@@ -31,9 +35,6 @@ export default function runHarvesterRole(creep: Creep): void {
         }
         case ERR_NOT_IN_RANGE: {
             creep.say(`🙂👉⛏⚡`);
-            creep.moveTo(harvestingPosition, {
-                visualizePathStyle: harvesterPathStyle,
-            });
             break;
         }
     }
