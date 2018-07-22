@@ -30,11 +30,7 @@ function build(creep: Creep): void {
         const buildReturnCode: ScreepsReturnCode = creep.build(constructionSites[0]);
 
         switch (buildReturnCode) {
-            case OK:
-                creep.say('🙂🔨🗑');
-                break;
             case ERR_NOT_IN_RANGE:
-                creep.say('🙂👉🔨🗑');
                 creep.moveTo(constructionSites[0], {
                     visualizePathStyle: builderPathStyle,
                 });
@@ -84,11 +80,7 @@ function repairUpgradeContainer(creep: Creep): void {
 
     const repairReturnCode: ScreepsReturnCode = creep.repair(container);
     switch (repairReturnCode) {
-        case OK:
-            creep.say('🙂🛠🗑');
-            break;
         case ERR_NOT_IN_RANGE:
-            creep.say('🙂👉🛠🗑');
             creep.moveTo(container, {
                 visualizePathStyle: builderPathStyle,
             });

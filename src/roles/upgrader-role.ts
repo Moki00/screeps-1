@@ -43,18 +43,9 @@ function upgrade(creep: Creep): void {
 
         const upgradeReturnCode: ScreepsReturnCode = creep.upgradeController(controller);
         switch (upgradeReturnCode) {
-            case OK: {
-                creep.say(`😌🔝`);
-                break;
-            }
-            case ERR_NOT_IN_RANGE: {
-                creep.say(`🙂👉🔝`);
-                break;
-            }
-            case ERR_NOT_ENOUGH_ENERGY: {
+            case ERR_NOT_ENOUGH_ENERGY:
                 creep.memory.state = UpgraderRoleState.FIND_ENERGY;
                 break;
-            }
         }
 
     }
@@ -85,8 +76,6 @@ function isUpgraderOnPlace(room: Room): boolean {
 }
 
 function findSomeEnergy(creep: Creep): void {
-    creep.say(`😒🔎⚡`);
-
     if (creep.room.energyAvailable >= creep.carryCapacity) {
         const spawn: StructureSpawn = creep.room.find(FIND_MY_SPAWNS)[0];
         creep.withdraw(spawn, RESOURCE_ENERGY, creep.carryCapacity);
@@ -103,11 +92,9 @@ function findSomeEnergy(creep: Creep): void {
 
 function harvest(creep: Creep): void {
     const source: Source = creep.room.find(FIND_SOURCES)[0];
-    creep.say(`😞⛏`);
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
 
     if (harvestReturnCode === ERR_NOT_IN_RANGE) {
-        creep.say(`😞👉⛏`);
         creep.moveTo(source, {
             visualizePathStyle: upgraderPathStyle,
         });

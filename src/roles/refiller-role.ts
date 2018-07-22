@@ -39,11 +39,7 @@ function refillEnergy(creep: Creep): void {
         const transferReturnCode: ScreepsReturnCode =
             creep.transfer(refillTarget, RESOURCE_ENERGY, Math.min(creep.carry.energy, energyToFull));
         switch (transferReturnCode) {
-            case OK:
-                creep.say('😌🔝');
-                break;
             case ERR_NOT_IN_RANGE:
-                creep.say('🙂👉🔝');
                 creep.moveTo(refillTarget, {
                     visualizePathStyle: refillerPathStyle,
                 });
@@ -77,11 +73,7 @@ function refillUpgrader(creep: Creep): void {
     const transferReturnCode: ScreepsReturnCode =
         creep.transfer(container, RESOURCE_ENERGY, Math.min(creep.carry.energy, energyToFull));
     switch (transferReturnCode) {
-        case OK:
-            creep.say('😌🔝');
-            break;
         case ERR_NOT_IN_RANGE:
-            creep.say('😌👉🔝');
             creep.moveTo(container, {
                 visualizePathStyle: refillerPathStyle,
             });
@@ -134,7 +126,6 @@ function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExte
 }
 
 function findEnergy(creep: Creep): void {
-    creep.say('🙂🔎⚡');
     const containers: StructureContainer[] = creep.room
         .find<StructureContainer>(FIND_STRUCTURES)
         .filter((structure) => {
@@ -160,7 +151,6 @@ function findEnergy(creep: Creep): void {
             creep.withdraw(mostFilledContainer, RESOURCE_ENERGY);
         switch (withdrawReturnCode) {
             case ERR_NOT_IN_RANGE:
-                creep.say('🙂👉🔎⚡');
                 creep.moveTo(mostFilledContainer, {
                     visualizePathStyle: refillerPathStyle,
                 });
@@ -180,11 +170,9 @@ function findEnergy(creep: Creep): void {
 
 function harvest(creep: Creep): void {
     const source: Source = creep.room.find(FIND_SOURCES)[0];
-    creep.say(`😞⛏`);
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
 
     if (harvestReturnCode === ERR_NOT_IN_RANGE) {
-        creep.say(`😞👉⛏`);
         creep.moveTo(source, {
             visualizePathStyle: refillerPathStyle,
         });
@@ -202,18 +190,12 @@ function build(creep: Creep): void {
         const buildReturnCode: ScreepsReturnCode = creep.build(constructionSites[0]);
 
         switch (buildReturnCode) {
-            case OK:
-                creep.say('😒⚒');
-                break;
             case ERR_NOT_IN_RANGE:
-                creep.say('😒👉⚒');
                 creep.moveTo(constructionSites[0], {
                     visualizePathStyle: refillerPathStyle,
                 });
                 break;
         }
-    } else {
-        creep.say('💤');
     }
 
     if (creep.carry.energy === 0) {

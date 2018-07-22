@@ -30,13 +30,11 @@ export default function runHarvesterRole(creep: Creep): void {
     switch (harvestReturnCode) {
         case OK:
         case ERR_NOT_ENOUGH_RESOURCES: {
-            creep.say(`😌⛏⚡`);
             takeCareOfContainerUnder(creep);
             saveDroppedEnergy(creep);
             break;
         }
         case ERR_NOT_IN_RANGE: {
-            creep.say(`🙂👉⛏⚡`);
             break;
         }
     }
@@ -57,7 +55,6 @@ function repairHarvestersContainer(creep: Creep): void {
     const creepRepairPower: number = creep.getActiveBodyparts(WORK) * REPAIR_POWER;
     const constructionHitsTaken: number = container.hitsMax - container.hits;
     if (constructionHitsTaken >= creepRepairPower) {
-        creep.say('🙂🛠🗑');
         creep.repair(container);
     } else {
         creep.transfer(container, RESOURCE_ENERGY);
@@ -73,7 +70,6 @@ function buildHarvestersContainerConstructionSite(creep: Creep): void {
 
     const creepBuildPower: number = creep.getActiveBodyparts(WORK) * BUILD_POWER;
     if (creep.carry.energy >= creepBuildPower) {
-        creep.say('🙂🔨🗑');
         creep.build(constructionSite);
     }
 }
