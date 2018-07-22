@@ -17,10 +17,11 @@ export function scanAndDrawRoleVisuals() {
 }
 
 const charsByRole: CharsByRole = {
-    harvester: '⛏',
-    refiller: '💯',
-    upgrader: '🔝',
-    builder: '🔨',
+    'harvester': '⛏',
+    'refiller': '💯',
+    'upgrader': '🔝',
+    'builder': '🔨',
+    'harvest-transporter': '🚚',
 };
 
 interface CharsByRole {

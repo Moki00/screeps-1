@@ -1,9 +1,13 @@
-import {getAnyFreeSourceId} from '../constructions/harvest-base';
+import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
     if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
         return;
+    }
+
+    if (doINeedHarvestTransporter(spawn.room)) {
+        spawnHarvestTransporter(spawn);
     }
 
     if (howManyCreepsShouldISpawn(spawn, 'builder') > 0) {
@@ -62,7 +66,7 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
         {
         memory: {
             role: 'harvester',
-            targetSourceId: getAnyFreeSourceId(spawn.room),
+            targetSourceId: getAnySourceIdWithoutHarvester(spawn.room),
         },
     });
 }
@@ -93,6 +97,28 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
     });
 }
 
+function spawnHarvestTransporter(spawn: StructureSpawn): void {
+    const name = `HarvestTransporter-${Game.time}`;
+
+    spawn.spawnCreep(
+        stripBodyParts(
+            [
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+            ],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+            },
+        ),
+        name, {
+            memory: {
+                role: 'harvest-transporter',
+                targetSourceId: getAnySourceIdWithoutTransporter(spawn.room),
+            },
+        });
+}
+
 function doINeedUpgrader(room: Room): boolean {
     return !room
         .find(FIND_MY_CREEPS)
@@ -100,7 +126,11 @@ function doINeedUpgrader(room: Room): boolean {
 }
 
 function doINeedHarvester(room: Room): boolean {
-    return !!getAnyFreeSourceId(room);
+    return !!getAnySourceIdWithoutHarvester(room);
+}
+
+function doINeedHarvestTransporter(room: Room): boolean {
+    return !!room.storage && !!getAnySourceIdWithoutTransporter(room);
 }
 
 function howManyCreepsDoINeedInRoom(role: string, room: Room): number {

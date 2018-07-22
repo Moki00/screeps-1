@@ -1,11 +1,15 @@
-import {getAnyFreeSourceId, getHarvestingPosition, getSourceOfHarvester} from '../constructions/harvest-base';
+import {
+    getAnySourceIdWithoutHarvester,
+    getHarvestingPosition,
+    getSourceOfHarvester,
+} from '../constructions/harvest-base';
 import {harvesterPathStyle} from '../visuals/creep-paths';
 
 export default function runHarvesterRole(creep: Creep): void {
     let source: Source | null = getSourceOfHarvester(creep);
 
     if (!source) {
-        const anyFreeSourceId: string | null = getAnyFreeSourceId(creep.room);
+        const anyFreeSourceId: string | null = getAnySourceIdWithoutHarvester(creep.room);
         if (anyFreeSourceId) {
             source = Game.getObjectById(anyFreeSourceId);
         }

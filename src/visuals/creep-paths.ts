@@ -5,10 +5,11 @@ const creepPathStyle: PolyStyle = {
     lineStyle: 'dashed',
 };
 
-export const harvesterPathStyle: PolyStyle = {...creepPathStyle, stroke: 'gold'};
-export const refillerPathStyle: PolyStyle = {...creepPathStyle, stroke: 'skyblue'};
-export const upgraderPathStyle: PolyStyle = {...creepPathStyle, stroke: 'lightgray'};
-export const builderPathStyle: PolyStyle = {...creepPathStyle, stroke: 'brown'};
+export const harvesterPathStyle: PolyStyle = {...creepPathStyle, stroke: 'Gold'};
+export const refillerPathStyle: PolyStyle = {...creepPathStyle, stroke: 'SkyBlue'};
+export const upgraderPathStyle: PolyStyle = {...creepPathStyle, stroke: 'LightGray'};
+export const builderPathStyle: PolyStyle = {...creepPathStyle, stroke: 'Brown'};
+export const harvestTransporterPathStyle: PolyStyle = {...creepPathStyle, stroke: 'DarkKhaki'};
 
 export const towerAttackRangeStyle: PolyStyle = {
     fill: 'cadetblue',

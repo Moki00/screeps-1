@@ -6,18 +6,34 @@ export default function updateHarvestBases(room: Room) {
     createHarvestingSpots(room);
 
     checkIfHarvestersExist(room);
+    checkIfTransportersExist(room);
 }
 
-export function getAnyFreeSourceId(room: Room): string | null {
+export function getAnySourceIdWithoutHarvester(room: Room): string | null {
     if (!room.memory.sources) {
         return null;
     }
 
-    const anyFreeSourceMemory: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
-        .find((sourceMemory) => !sourceMemory.occupiedByCreepId);
+    const sourceMemoryWithoutHarvester: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
+        .find((sourceMemory) => !sourceMemory.harvesterCreepId);
 
-    if (anyFreeSourceMemory) {
-        return anyFreeSourceMemory.sourceId;
+    if (sourceMemoryWithoutHarvester) {
+        return sourceMemoryWithoutHarvester.sourceId;
+    }
+
+    return null;
+}
+
+export function getAnySourceIdWithoutTransporter(room: Room): string | null {
+    if (!room.memory.sources) {
+        return null;
+    }
+
+    const sourceMemoryWithoutTransporter: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
+        .find((sourceMemory) => !sourceMemory.transporterCreepId);
+
+    if (sourceMemoryWithoutTransporter) {
+        return sourceMemoryWithoutTransporter.sourceId;
     }
 
     return null;
@@ -41,6 +57,19 @@ export function getSourceOfHarvester(creep: Creep): Source | null {
     return Game.getObjectById(creep.memory.targetSourceId);
 }
 
+export function getHarvestContainer(creep: Creep): StructureContainer | undefined {
+    const harvestingPosition: RoomPosition | null = getHarvestingPosition(creep.room, creep.memory.targetSourceId);
+    if (!harvestingPosition) {
+        return undefined;
+    }
+
+    const container: StructureContainer | undefined = harvestingPosition
+        .lookFor(LOOK_STRUCTURES)
+        .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
+
+    return container;
+}
+
 function getHarvesterBySourceId(sourceId: string): Creep | undefined {
     const source: Source | null = Game.getObjectById(sourceId);
     const room: Room | undefined = source ? source.room : undefined;
@@ -53,14 +82,38 @@ function getHarvesterBySourceId(sourceId: string): Creep | undefined {
         .find((creep) => creep.memory.targetSourceId === sourceId);
 }
 
+function getTransporterBySourceId(sourceId: string): Creep | undefined {
+    const source: Source | null = Game.getObjectById(sourceId);
+    const room: Room | undefined = source ? source.room : undefined;
+    if (!room) {
+        return undefined;
+    }
+
+    return room.find(FIND_MY_CREEPS)
+        .filter((creep) => creep.memory.role === 'harvest-transporter')
+        .find((creep) => creep.memory.targetSourceId === sourceId);
+}
+
 function checkIfHarvestersExist(room: Room): void {
     Object.values<SourceMemory>(room.memory.sources)
         .forEach((sourceMemory) => {
             const creep: Creep | undefined = getHarvesterBySourceId(sourceMemory.sourceId);
             if (creep) {
-                sourceMemory.occupiedByCreepId = creep.id;
+                sourceMemory.harvesterCreepId = creep.id;
             } else {
-                sourceMemory.occupiedByCreepId = null;
+                sourceMemory.harvesterCreepId = null;
+            }
+        });
+}
+
+function checkIfTransportersExist(room: Room): void {
+    Object.values<SourceMemory>(room.memory.sources)
+        .forEach((sourceMemory) => {
+            const creep: Creep | undefined = getTransporterBySourceId(sourceMemory.sourceId);
+            if (creep) {
+                sourceMemory.transporterCreepId = creep.id;
+            } else {
+                sourceMemory.transporterCreepId = null;
             }
         });
 }
@@ -73,7 +126,8 @@ function initRoomSpawnsMemory(room: Room): void {
     sources.forEach((source) => {
         room.memory.sources[source.id] = {
             sourceId: source.id,
-            occupiedByCreepId: null,
+            harvesterCreepId: null,
+            transporterCreepId: null,
             harvestingPosition: null,
             towerPosition: null,
         };

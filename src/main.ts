@@ -6,6 +6,7 @@ import createStorageConstructionSite from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
 import updateUpgradeBase from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder-role';
+import runHarvestTransporterRole from './roles/harvest-transporter-role';
 import runHarvesterRole from './roles/harvester-role';
 import runRefillerRole from './roles/refiller-role';
 import runUpgraderRole from './roles/upgrader-role';
@@ -63,6 +64,9 @@ function runRoles(): void {
                 break;
             case 'refiller':
                 runRefillerRole(creep);
+                break;
+            case 'harvest-transporter':
+                runHarvestTransporterRole(creep);
                 break;
         }
     }
