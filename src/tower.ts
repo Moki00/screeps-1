@@ -24,8 +24,14 @@ function attack(tower: StructureTower): boolean {
 }
 
 function heal(tower: StructureTower): void {
-    const hurtCreep: Creep | undefined = tower.room.find(FIND_MY_CREEPS)
-        .find((creep) => creep.hits < creep.hitsMax);
+    const areHostileCreepsPresent: boolean = !!tower.room.find(FIND_HOSTILE_CREEPS).length;
+
+    const hurtCreep: Creep | undefined =
+        (areHostileCreepsPresent ?
+            tower.pos.findInRange(FIND_MY_CREEPS, TOWER_OPTIMAL_RANGE)
+            :
+            tower.room.find(FIND_MY_CREEPS)
+        ).find((creep) => creep.hits < creep.hitsMax);
 
     if (hurtCreep) {
         tower.heal(hurtCreep);
