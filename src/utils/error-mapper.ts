@@ -71,7 +71,9 @@ function printOriginalError(error: Error) {
 }
 
 function printStackTrace(error: Error) {
-    console.log(`<span style="color: tomato">${escape(getSourceMapStackTrace(error))}</span>`);
+    const errorMessage = escape(getSourceMapStackTrace(error));
+    console.log(`<span style="color: tomato">${errorMessage}</span>`);
+    Game.notify(errorMessage);
 }
 
 function stripWebpackFromStackTrace(text: string): string {
