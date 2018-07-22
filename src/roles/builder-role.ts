@@ -1,5 +1,5 @@
 import {getUpgraderContainer} from '../constructions/upgrade-base';
-import {builderPathStyle} from '../visuals';
+import {builderPathStyle} from '../visuals/creep-paths';
 
 enum BuilderRoleState {
     BUILD,

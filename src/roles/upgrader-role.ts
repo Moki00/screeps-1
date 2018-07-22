@@ -1,5 +1,5 @@
 import {getUpgradingPosition} from '../constructions/upgrade-base';
-import {upgraderPathStyle} from '../visuals';
+import {upgraderPathStyle} from '../visuals/creep-paths';
 
 enum UpgraderRoleState {
     UPGRADE,

@@ -1,4 +1,4 @@
-import {towerAttackRangeStyle} from './visuals';
+import {towerAttackRangeStyle} from './visuals/creep-paths';
 
 export default function runTower(tower: StructureTower): void {
     const hasAttacked: boolean = attack(tower);

@@ -1,5 +1,5 @@
 import {getUpgraderContainer, getUpgradingPosition} from '../constructions/upgrade-base';
-import {refillerPathStyle} from '../visuals';
+import {refillerPathStyle} from '../visuals/creep-paths';
 
 enum RefillerRoleState {
     REFILL,
