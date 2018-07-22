@@ -28,7 +28,8 @@ export default function runHarvesterRole(creep: Creep): void {
 
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
     switch (harvestReturnCode) {
-        case OK: {
+        case OK:
+        case ERR_NOT_ENOUGH_RESOURCES: {
             creep.say(`😌⛏⚡`);
             takeCareOfContainerUnder(creep);
             saveDroppedEnergy(creep);
