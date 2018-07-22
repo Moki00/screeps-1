@@ -50,7 +50,7 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
 
     spawn.spawnCreep(
         stripBodyParts(
-            [MOVE, WORK, WORK, WORK, MOVE, CARRY, WORK],
+            [WORK, MOVE, WORK, MOVE, WORK, WORK, WORK, MOVE, CARRY, WORK],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
                 fatigue: {
