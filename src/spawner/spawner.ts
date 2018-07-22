@@ -70,7 +70,7 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
 function spawnBuilderCreep(spawn: StructureSpawn): void {
     const name = `Builder-${Game.time}`;
 
-    spawn.spawnCreep([WORK, CARRY, MOVE], name, {
+    spawn.spawnCreep([WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE], name, {
         memory: {
             role: 'builder',
         },

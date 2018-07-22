@@ -2,6 +2,7 @@ import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
 import RoomControllerMemory from './constructions/room-controller-memory.interface';
 import RoomSourcesMemory from './constructions/room-sources-memory.interface';
+import createStorageConstructionSite from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
 import updateUpgradeBase from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder-role';
@@ -35,6 +36,7 @@ const tick: () => void = () => {
 
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
     createTowersContructionSites(Game.spawns.Spawn1);
+    createStorageConstructionSite(Game.spawns.Spawn1.room);
     updateHarvestBases(Game.spawns.Spawn1.room);
     updateUpgradeBase(Game.spawns.Spawn1.room);
     updateSpawner(Game.spawns.Spawn1);
