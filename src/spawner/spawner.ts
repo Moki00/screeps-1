@@ -31,7 +31,8 @@ function spawnUpgraderCreep(spawn: StructureSpawn): void {
     const name = `Upgrader-${Game.time}`;
 
     spawn.spawnCreep(
-        stripBodyParts([MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, WORK, WORK, MOVE, CARRY],
+        stripBodyParts(
+            [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, WORK, WORK, MOVE, CARRY],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
                 fatigue: {
@@ -74,18 +75,28 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
 function spawnBuilderCreep(spawn: StructureSpawn): void {
     const name = `Builder-${Game.time}`;
 
-    spawn.spawnCreep([WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE], name, {
-        memory: {
-            role: 'builder',
+    spawn.spawnCreep(
+        stripBodyParts(
+            [WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+            },
+        ),
+        name,
+        {
+            memory: {
+                role: 'builder',
+            },
         },
-    });
+    );
 }
 
 function spawnRefillerCreep(spawn: StructureSpawn): void {
     const name = `Refiller-${Game.time}`;
 
     spawn.spawnCreep(
-        stripBodyParts([MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY],
+        stripBodyParts(
+            [MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
             },
@@ -148,8 +159,8 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
 
         },
         refiller: {
-            1: 1,
-            2: 1,
+            1: 2,
+            2: 2,
             3: 2,
             4: 2,
             5: 2,
