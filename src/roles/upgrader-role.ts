@@ -81,7 +81,20 @@ function findSomeEnergy(creep: Creep): void {
         creep.withdraw(spawn, RESOURCE_ENERGY, creep.carryCapacity);
     }
 
-    if (creep.carry.energy === 0) {
+    if (creep.room.storage) {
+        const withdrawReturnCode: ScreepsReturnCode =
+            creep.withdraw(creep.room.storage, RESOURCE_ENERGY);
+        switch (withdrawReturnCode) {
+            case ERR_NOT_IN_RANGE:
+                creep.moveTo(creep.room.storage, {
+                    visualizePathStyle: upgraderPathStyle,
+                });
+                break;
+            case ERR_NOT_ENOUGH_RESOURCES:
+                creep.memory.state = UpgraderRoleState.HARVEST;
+                break;
+        }
+    } else if (creep.carry.energy === 0) {
         creep.memory.state = UpgraderRoleState.HARVEST;
     }
 

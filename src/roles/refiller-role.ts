@@ -1,3 +1,4 @@
+import {first} from 'lodash';
 import {getUpgraderContainer, getUpgradingPosition} from '../constructions/upgrade-base';
 import {refillerPathStyle} from '../visuals/creep-paths';
 
@@ -126,38 +127,32 @@ function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExte
 }
 
 function findEnergy(creep: Creep): void {
-    const containers: StructureContainer[] = creep.room
-        .find<StructureContainer>(FIND_STRUCTURES)
-        .filter((structure) => {
-            const isItHarvestersContainer: boolean = !!Object.values(creep.room.memory.sources)
-                .find((sourceBase) => {
-                    return (
-                        sourceBase.harvestingPosition!.x === structure.pos.x &&
-                        sourceBase.harvestingPosition!.y === structure.pos.y
-                    );
-                });
+    const mostFilledContainer: StructureContainer | undefined = first(
+        creep.room
+            .find<StructureContainer>(FIND_STRUCTURES)
+            .filter((structure) => {
+                const isItHarvestersContainer: boolean = !!Object.values(creep.room.memory.sources)
+                    .find((sourceBase) => {
+                        return (
+                            sourceBase.harvestingPosition!.x === structure.pos.x &&
+                            sourceBase.harvestingPosition!.y === structure.pos.y
+                        );
+                    });
 
-            return (
-                structure.structureType === STRUCTURE_CONTAINER &&
-                isItHarvestersContainer
-            );
-        })
-        .sort((a, b) => b.store.energy - a.store.energy);
+                return (
+                    structure.structureType === STRUCTURE_CONTAINER &&
+                    isItHarvestersContainer
+                );
+            })
+            .sort((a, b) => b.store.energy - a.store.energy),
+        );
 
-    if (containers.length) {
-        const mostFilledContainer: StructureContainer = containers[0];
+    if (creep.room.storage || mostFilledContainer) {
+        const target: StructureContainer | StructureStorage | undefined
+            = creep.room.storage ? creep.room.storage : mostFilledContainer;
 
-        const withdrawReturnCode: ScreepsReturnCode =
-            creep.withdraw(mostFilledContainer, RESOURCE_ENERGY);
-        switch (withdrawReturnCode) {
-            case ERR_NOT_IN_RANGE:
-                creep.moveTo(mostFilledContainer, {
-                    visualizePathStyle: refillerPathStyle,
-                });
-                break;
-            case ERR_NOT_ENOUGH_RESOURCES:
-                creep.memory.state = RefillerRoleState.HARVEST;
-                break;
+        if (target) {
+            goForEnergy(creep, target);
         }
     } else {
         creep.memory.state = RefillerRoleState.HARVEST;
@@ -202,5 +197,20 @@ function build(creep: Creep): void {
         creep.memory.state = RefillerRoleState.FIND_ENERGY;
     } else {
         creep.memory.state = RefillerRoleState.REFILL;
+    }
+}
+
+function goForEnergy(creep: Creep, target: StructureContainer | StructureStorage): void {
+    const withdrawReturnCode: ScreepsReturnCode =
+        creep.withdraw(target, RESOURCE_ENERGY);
+    switch (withdrawReturnCode) {
+        case ERR_NOT_IN_RANGE:
+            creep.moveTo(target, {
+                visualizePathStyle: refillerPathStyle,
+            });
+            break;
+        case ERR_NOT_ENOUGH_RESOURCES:
+            creep.memory.state = RefillerRoleState.HARVEST;
+            break;
     }
 }

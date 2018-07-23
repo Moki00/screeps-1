@@ -1,3 +1,4 @@
+import {first} from 'lodash';
 import {getUpgraderContainer} from '../constructions/upgrade-base';
 import {builderPathStyle} from '../visuals/creep-paths';
 
@@ -46,22 +47,19 @@ function build(creep: Creep): void {
 }
 
 function findEnergy(creep: Creep): void {
-    const containers: StructureContainer[] = creep.room
-        .find<StructureContainer>(FIND_STRUCTURES)
-        .filter((structure) => structure.structureType === STRUCTURE_CONTAINER)
-        .sort((a, b) => b.store.energy - a.store.energy);
+    const mostFilledContainer: StructureContainer | undefined = first(
+        creep.room
+            .find<StructureContainer>(FIND_STRUCTURES)
+            .filter((structure) => structure.structureType === STRUCTURE_CONTAINER)
+            .sort((a, b) => b.store.energy - a.store.energy),
+    );
 
-    if (containers.length) {
-        const mostFilledContainer: StructureContainer = containers[0];
+    if (creep.room.storage || mostFilledContainer) {
+        const target: StructureStorage | StructureContainer | undefined =
+            creep.room.storage ? creep.room.storage : mostFilledContainer;
 
-        const withdrawReturnCode: ScreepsReturnCode =
-            creep.withdraw(mostFilledContainer, RESOURCE_ENERGY, creep.carryCapacity);
-        switch (withdrawReturnCode) {
-            case ERR_NOT_IN_RANGE:
-                creep.moveTo(mostFilledContainer, {
-                    visualizePathStyle: builderPathStyle,
-                });
-                break;
+        if (target) {
+            goForEnergy(creep, target);
         }
     }
 
@@ -93,5 +91,17 @@ function repairUpgradeContainer(creep: Creep): void {
 
     if (creep.carry.energy === 0) {
         creep.memory.state = BuilderRoleState.FIND_ENERGY;
+    }
+}
+
+function goForEnergy(creep: Creep, target: StructureContainer | StructureStorage): void {
+    const withdrawReturnCode: ScreepsReturnCode =
+        creep.withdraw(target, RESOURCE_ENERGY, creep.carryCapacity);
+    switch (withdrawReturnCode) {
+        case ERR_NOT_IN_RANGE:
+            creep.moveTo(target, {
+                visualizePathStyle: builderPathStyle,
+            });
+            break;
     }
 }
