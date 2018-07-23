@@ -144,7 +144,12 @@ function findEnergy(creep: Creep): void {
                     isItHarvestersContainer
                 );
             })
-            .sort((a, b) => b.store.energy - a.store.energy),
+            .sort((a, b) => b.store.energy - a.store.energy)
+            .sort((a, b) => {
+                const distanceA: number = a.pos.findPathTo(creep, {ignoreCreeps: true}).length;
+                const distanceB: number = b.pos.findPathTo(creep, {ignoreCreeps: true}).length;
+                return distanceA - distanceB;
+            }),
         );
 
     if (creep.room.storage || mostFilledContainer) {

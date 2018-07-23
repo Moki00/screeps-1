@@ -152,7 +152,7 @@ function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
     } = {
         builder: {
             1: 1,
-            2: 1,
+            2: 2,
             3: 1,
             4: 1,
             5: 1,
