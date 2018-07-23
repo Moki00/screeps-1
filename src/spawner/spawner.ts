@@ -10,7 +10,7 @@ export default function updateSpawner(spawn: StructureSpawn) {
         spawnHarvestTransporter(spawn);
     }
 
-    if (howManyCreepsShouldISpawn(spawn, 'builder') > 0) {
+    if (doINeedBuilder(spawn.room)) {
         spawnBuilderCreep(spawn);
     }
 
@@ -144,20 +144,53 @@ function doINeedHarvestTransporter(room: Room): boolean {
     return !!room.storage && !!getAnySourceIdWithoutTransporter(room);
 }
 
+function doINeedBuilder(room: Room): boolean {
+    const builders: Creep[] = room.find(FIND_MY_CREEPS)
+        .filter((creep) => creep.memory.role === 'builder');
+
+    const buildersWorkParts: number = builders
+        .map((creep) => creep.getActiveBodyparts(WORK))
+        .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+
+    const buildersTicksToLive: number = builders
+        .map((creep) => creep.ticksToLive!)
+        .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+
+    const hitsToRepair: number = room.find(FIND_STRUCTURES)
+        .filter((structure) => {
+            if (structure.hits === undefined) {
+                return false;
+            }
+
+            const ignoredConstructionTypes: string[] = [STRUCTURE_RAMPART, STRUCTURE_WALL];
+            return !ignoredConstructionTypes
+                .find((structureType) => structureType === structure.structureType);
+        })
+        .map((structure) => {
+
+            return structure.hitsMax - structure.hits;
+        })
+        .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+
+    const hitsToBuild: number = room.find(FIND_MY_CONSTRUCTION_SITES)
+        .map((constructionSite) => constructionSite.progressTotal - constructionSite.progress)
+        .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+
+    const ticksToRepair: number = Math.ceil(hitsToRepair / REPAIR_POWER);
+    const ticksToBuild: number = Math.ceil(hitsToBuild / BUILD_POWER);
+    const ticksToWork: number = ticksToRepair + ticksToBuild;
+
+    const workWorthLeftQuickAssumption: number = buildersWorkParts * (buildersTicksToLive / 2);
+
+    return ticksToWork > workWorthLeftQuickAssumption;
+}
+
 function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
     const neededRolesByRCL: {
         [role: string]: {
             [rcl: number]: number,
         },
     } = {
-        builder: {
-            1: 1,
-            2: 2,
-            3: 1,
-            4: 1,
-            5: 1,
-
-        },
         refiller: {
             1: 2,
             2: 2,
