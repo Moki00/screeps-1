@@ -22,7 +22,7 @@ export default function updateSpawner(spawn: StructureSpawn) {
         spawnUpgraderCreep(spawn);
     }
 
-    if (howManyCreepsShouldISpawn(spawn, 'refiller') > 0) {
+    if (doINeedRefiller(spawn.room)) {
         spawnRefillerCreep(spawn);
     }
 }
@@ -185,32 +185,9 @@ function doINeedBuilder(room: Room): boolean {
     return ticksToWork > workWorthLeftQuickAssumption;
 }
 
-function howManyCreepsDoINeedInRoom(role: string, room: Room): number {
-    const neededRolesByRCL: {
-        [role: string]: {
-            [rcl: number]: number,
-        },
-    } = {
-        refiller: {
-            1: 2,
-            2: 2,
-            3: 2,
-            4: 2,
-            5: 2,
-        },
-    };
-
-    if (!room.controller) {
-        return 0;
-    }
-
-    return neededRolesByRCL[role][room.controller.level];
-}
-
-function howManyCreepsShouldISpawn(spawn: StructureSpawn, role: string): number {
-    const howManyDoIHave: number = spawn.room.find(FIND_MY_CREEPS, {
-        filter: (creep: Creep) => creep.memory.role === role,
-    }).length;
-    const howManyDoINeed: number = howManyCreepsDoINeedInRoom(role, spawn.room);
-    return howManyDoINeed - howManyDoIHave;
+function doINeedRefiller(room: Room): boolean {
+    return room
+        .find(FIND_MY_CREEPS)
+        .filter((creep) => creep.memory.role === 'refiller')
+        .length < 2;
 }
