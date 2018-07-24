@@ -1,5 +1,5 @@
 import {getHarvestContainer} from '../constructions/harvest-base';
-import {harvestTransporterPathStyle} from '../visuals/creep-paths';
+import {getCreepPathStyle} from '../visuals/config';
 
 enum HarvestTransporterState {
     TAKE_ENERGY,
@@ -33,7 +33,7 @@ function getEnergy(creep: Creep): void {
             break;
         case ERR_NOT_IN_RANGE: {
             creep.moveTo(container, {
-                visualizePathStyle: harvestTransporterPathStyle,
+                visualizePathStyle: getCreepPathStyle(creep),
             });
             break;
         }
@@ -50,7 +50,7 @@ function transportEnergyToStorage(creep: Creep): void {
     switch (transferReturnCode) {
         case ERR_NOT_IN_RANGE:
             creep.moveTo(creep.room.storage, {
-                visualizePathStyle: harvestTransporterPathStyle,
+                visualizePathStyle: getCreepPathStyle(creep),
             });
             break;
     }

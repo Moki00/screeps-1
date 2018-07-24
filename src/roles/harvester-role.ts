@@ -3,7 +3,7 @@ import {
     getHarvestingPosition,
     getSourceOfHarvester,
 } from '../constructions/harvest-base';
-import {harvesterPathStyle} from '../visuals/creep-paths';
+import {getCreepPathStyle} from '../visuals/config';
 
 export default function runHarvesterRole(creep: Creep): void {
     let source: Source | null = getSourceOfHarvester(creep);
@@ -27,7 +27,7 @@ export default function runHarvesterRole(creep: Creep): void {
     }
 
     creep.moveTo(harvestingPosition, {
-        visualizePathStyle: harvesterPathStyle,
+        visualizePathStyle: getCreepPathStyle(creep),
     });
 
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);

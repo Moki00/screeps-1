@@ -1,4 +1,4 @@
-import {towerAttackRangeStyle} from './visuals/creep-paths';
+import drawTowerOptimalRangeVisual from './visuals/draw-tower-optimal-range';
 
 export default function runTower(tower: StructureTower): void {
     const hasAttacked: boolean = attack(tower);
@@ -9,7 +9,7 @@ export default function runTower(tower: StructureTower): void {
 }
 
 function attack(tower: StructureTower): boolean {
-    drawAttackRangeVisual(tower);
+    drawTowerOptimalRangeVisual(tower);
 
     const closeHostiles: Creep[] = tower.pos.findInRange(FIND_HOSTILE_CREEPS, TOWER_OPTIMAL_RANGE)
         .filter((creep) => isCreepDangerous(creep));
@@ -36,17 +36,6 @@ function heal(tower: StructureTower): void {
     if (hurtCreep) {
         tower.heal(hurtCreep);
     }
-}
-
-function drawAttackRangeVisual(tower: StructureTower): void {
-    const visualRange: number = (TOWER_OPTIMAL_RANGE + 0.5);
-    tower.room.visual.rect(
-        tower.pos.x - visualRange,
-        tower.pos.y - visualRange,
-        2 * visualRange,
-        2 * visualRange,
-        towerAttackRangeStyle,
-    );
 }
 
 function isCreepDangerous(creep: Creep): boolean {

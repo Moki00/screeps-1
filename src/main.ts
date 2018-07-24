@@ -13,7 +13,7 @@ import runUpgraderRole from './roles/upgrader-role';
 import updateSpawner from './spawner/spawner';
 import runTower from './tower';
 import errorMapper from './utils/error-mapper';
-import {scanAndDrawRoleVisuals} from './visuals/creep-roles';
+import {scanAndDrawRoleIcons} from './visuals/draw-creep-role-icon';
 
 declare global {
     interface CreepMemory {
@@ -43,7 +43,7 @@ const tick: () => void = () => {
     updateSpawner(Game.spawns.Spawn1);
     runRoles();
     runTowers(Game.spawns.Spawn1.room);
-    scanAndDrawRoleVisuals();
+    scanAndDrawRoleIcons();
 
     cleanCreepsMemory();
 };

@@ -1,6 +1,6 @@
-import {first} from 'lodash';
 import {getUpgraderContainer} from '../constructions/upgrade-base';
-import {builderPathStyle} from '../visuals/creep-paths';
+import {getCreepPathStyle} from '../visuals/config';
+import getMostFilledHarvesterContainer from './common/get-most-filled-harvester-container';
 
 enum BuilderRoleState {
     BUILD,
@@ -33,7 +33,7 @@ function build(creep: Creep): void {
         switch (buildReturnCode) {
             case ERR_NOT_IN_RANGE:
                 creep.moveTo(constructionSites[0], {
-                    visualizePathStyle: builderPathStyle,
+                    visualizePathStyle: getCreepPathStyle(creep),
                 });
                 break;
         }
@@ -47,23 +47,7 @@ function build(creep: Creep): void {
 }
 
 function findEnergy(creep: Creep): void {
-    const mostFilledContainer: StructureContainer | undefined = first(
-        creep.room
-            .find<StructureContainer>(FIND_STRUCTURES)
-            .filter((structure) => structure.structureType === STRUCTURE_CONTAINER)
-            .sort((a, b) => {
-                const energyA = a.store.energy;
-                const energyB = b.store.energy;
-
-                if (energyA === energyB) {
-                    const distanceA: number = a.pos.findPathTo(creep, {ignoreCreeps: true}).length;
-                    const distanceB: number = b.pos.findPathTo(creep, {ignoreCreeps: true}).length;
-                    return distanceA - distanceB;
-                }
-
-                return energyB - energyA;
-            }),
-    );
+    const mostFilledContainer: StructureContainer | undefined = getMostFilledHarvesterContainer(creep);
 
     if (creep.room.storage || mostFilledContainer) {
         const target: StructureStorage | StructureContainer | undefined =
@@ -91,7 +75,7 @@ function repairUpgradeContainer(creep: Creep): void {
     switch (repairReturnCode) {
         case ERR_NOT_IN_RANGE:
             creep.moveTo(container, {
-                visualizePathStyle: builderPathStyle,
+                visualizePathStyle: getCreepPathStyle(creep),
             });
             break;
     }
@@ -111,7 +95,7 @@ function goForEnergy(creep: Creep, target: StructureContainer | StructureStorage
     switch (withdrawReturnCode) {
         case ERR_NOT_IN_RANGE:
             creep.moveTo(target, {
-                visualizePathStyle: builderPathStyle,
+                visualizePathStyle: getCreepPathStyle(creep),
             });
             break;
     }
