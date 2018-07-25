@@ -9,7 +9,7 @@ export default function runHarvesterRole(creep: Creep): void {
     let source: Source | null = getSourceOfHarvester(creep);
 
     if (!source) {
-        const anyFreeSourceId: string | null = getAnySourceIdWithoutHarvester(creep.room);
+        const anyFreeSourceId: string | undefined = getAnySourceIdWithoutHarvester(creep.room);
         if (anyFreeSourceId) {
             source = Game.getObjectById(anyFreeSourceId);
         }

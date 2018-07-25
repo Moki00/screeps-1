@@ -9,9 +9,9 @@ export default function updateHarvestBases(room: Room) {
     checkIfTransportersExist(room);
 }
 
-export function getAnySourceIdWithoutHarvester(room: Room): string | null {
+export function getAnySourceIdWithoutHarvester(room: Room): string | undefined {
     if (!room.memory.sources) {
-        return null;
+        return undefined;
     }
 
     const sourceMemoryWithoutHarvester: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
@@ -21,12 +21,12 @@ export function getAnySourceIdWithoutHarvester(room: Room): string | null {
         return sourceMemoryWithoutHarvester.sourceId;
     }
 
-    return null;
+    return undefined;
 }
 
-export function getAnySourceIdWithoutTransporter(room: Room): string | null {
+export function getAnySourceIdWithoutTransporter(room: Room): string | undefined {
     if (!room.memory.sources) {
-        return null;
+        return undefined;
     }
 
     const sourceMemoryWithoutTransporter: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
@@ -36,7 +36,7 @@ export function getAnySourceIdWithoutTransporter(room: Room): string | null {
         return sourceMemoryWithoutTransporter.sourceId;
     }
 
-    return null;
+    return undefined;
 }
 
 export function getHarvestingPosition(room: Room, sourceId: string): RoomPosition | null {
@@ -58,6 +58,10 @@ export function getSourceOfHarvester(creep: Creep): Source | null {
 }
 
 export function getHarvestContainer(creep: Creep): StructureContainer | undefined {
+    if (!creep.memory.targetSourceId) {
+        return undefined;
+    }
+
     const harvestingPosition: RoomPosition | null = getHarvestingPosition(creep.room, creep.memory.targetSourceId);
     if (!harvestingPosition) {
         return undefined;

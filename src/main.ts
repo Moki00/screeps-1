@@ -1,7 +1,5 @@
 import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
-import RoomControllerMemory from './constructions/room-controller-memory.interface';
-import RoomSourcesMemory from './constructions/room-sources-memory.interface';
 import createStorageConstructionSite from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
 import updateUpgradeBase from './constructions/upgrade-base';
@@ -14,19 +12,6 @@ import updateSpawner from './spawner/spawner';
 import runTower from './tower';
 import errorMapper from './utils/error-mapper';
 import {scanAndDrawRoleIcons} from './visuals/draw-creep-role-icon';
-
-declare global {
-    interface CreepMemory {
-        [key: string]: any;
-    }
-}
-
-declare global {
-    interface RoomMemory {
-        sources: RoomSourcesMemory;
-        controller: RoomControllerMemory;
-    }
-}
 
 export const loop = () => {
     errorMapper(tick)();
