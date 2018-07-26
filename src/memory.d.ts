@@ -4,7 +4,7 @@ import RoomSourcesMemory from './constructions/room-sources-memory.interface';
 declare global {
     interface CreepMemory {
         role: string;
-        state?: number;
+        state?: string;
         targetSourceId?: string;
     }
 

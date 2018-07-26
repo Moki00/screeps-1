@@ -2,8 +2,8 @@ import {
     getAnySourceIdWithoutHarvester,
     getHarvestingPosition,
     getSourceOfHarvester,
-} from '../constructions/harvest-base';
-import {getCreepPathStyle} from '../visuals/config';
+} from '../../constructions/harvest-base';
+import {getCreepPathStyle} from '../../visuals/config';
 
 export default function runHarvesterRole(creep: Creep): void {
     let source: Source | null = getSourceOfHarvester(creep);
