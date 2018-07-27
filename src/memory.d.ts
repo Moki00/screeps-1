@@ -6,6 +6,7 @@ declare global {
         role: string;
         state?: string;
         targetSourceId?: string;
+        withdrawTargetId?: string;
     }
 
     interface RoomMemory {

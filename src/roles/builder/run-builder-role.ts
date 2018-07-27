@@ -1,6 +1,6 @@
+import findEnergy from '../common/find-energy';
 import build from './build';
 import BuilderRoleState from './builder-role-state';
-import findEnergy from './find-energy';
 import repair from './repair';
 
 export default function runBuilderRole(creep: Creep): void {
@@ -9,7 +9,10 @@ export default function runBuilderRole(creep: Creep): void {
             build(creep);
             break;
         case BuilderRoleState.FIND_ENERGY:
-            findEnergy(creep);
+            findEnergy(creep, {
+                onWithdrawState: BuilderRoleState.BUILD,
+                onNotEnoughResourcesState: BuilderRoleState.FIND_ENERGY,
+            });
             break;
         case BuilderRoleState.REPAIR:
             repair(creep);

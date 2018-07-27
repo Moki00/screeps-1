@@ -1,5 +1,5 @@
+import findEnergy from '../common/find-energy';
 import build from './build';
-import findEnergy from './find-energy';
 import harvest from './harvest';
 import refillEnergy from './refill';
 import refillUpgrader from './refill-upgrader';
@@ -14,7 +14,10 @@ export default function runRefillerRole(creep: Creep): void {
             refillUpgrader(creep);
             break;
         case RefillerRoleState.FIND_ENERGY:
-            findEnergy(creep);
+            findEnergy(creep, {
+                onWithdrawState: RefillerRoleState.REFILL,
+                onNotEnoughResourcesState: RefillerRoleState.HARVEST,
+            });
             break;
         case RefillerRoleState.HARVEST:
             harvest(creep);
@@ -23,6 +26,9 @@ export default function runRefillerRole(creep: Creep): void {
             build(creep);
             break;
         default:
-            findEnergy(creep);
+            findEnergy(creep, {
+                onWithdrawState: RefillerRoleState.REFILL,
+                onNotEnoughResourcesState: RefillerRoleState.HARVEST,
+            });
     }
 }
