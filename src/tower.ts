@@ -11,14 +11,14 @@ export default function runTower(tower: StructureTower): void {
 function attack(tower: StructureTower): boolean {
     drawTowerOptimalRangeVisual(tower);
 
-    const closeHostiles: Creep[] = tower.pos.findInRange(FIND_HOSTILE_CREEPS, TOWER_OPTIMAL_RANGE)
-        .filter((creep) => isCreepDangerous(creep));
+    const closestHostile: Creep | undefined =
+        tower.pos.findInRange(FIND_HOSTILE_CREEPS, TOWER_OPTIMAL_RANGE).find(() => true);
 
-    if (!closeHostiles) {
+    if (!closestHostile) {
         return false;
     }
 
-    const attackReturnCode: ScreepsReturnCode = tower.attack(closeHostiles[0]);
+    const attackReturnCode: ScreepsReturnCode = tower.attack(closestHostile);
 
     return attackReturnCode === OK;
 }
@@ -36,12 +36,4 @@ function heal(tower: StructureTower): void {
     if (hurtCreep) {
         tower.heal(hurtCreep);
     }
-}
-
-function isCreepDangerous(creep: Creep): boolean {
-    return !!(
-        creep.getActiveBodyparts(ATTACK) ||
-        creep.getActiveBodyparts(RANGED_ATTACK) ||
-        creep.getActiveBodyparts(CLAIM)
-    );
 }
