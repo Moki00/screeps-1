@@ -21,7 +21,7 @@ export default function findEnergy(creep: Creep): void {
 
 function goForEnergy(creep: Creep, target: StructureContainer | StructureStorage): void {
     const withdrawReturnCode: ScreepsReturnCode =
-        creep.withdraw(target, RESOURCE_ENERGY, creep.carryCapacity);
+        creep.withdraw(target, RESOURCE_ENERGY);
     switch (withdrawReturnCode) {
         case ERR_NOT_IN_RANGE:
             creep.moveTo(target, {
