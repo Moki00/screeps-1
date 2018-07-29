@@ -1,7 +1,17 @@
-export default function updateUpgradeBase(room: Room) {
+import drawRclStats from '../visuals/draw-rcl-stats';
+
+export default function updateUpgradeBase(room: Room): void {
+    if (!room.controller) {
+        return;
+    }
+
     initControllerMemory(room);
 
     createUpgradingSpot(room);
+
+    drawRclStats(room);
+
+    room.memory.controller.previousProgress = room.controller.progress;
 }
 
 export function getUpgradingPosition(room: Room): RoomPosition | null {
@@ -38,6 +48,10 @@ export function getUpgraderContainer(room: Room): StructureContainer | null {
     return container;
 }
 
+export function getUpgradingSpeed(controller: StructureController): number {
+    return controller.progress - controller.room.memory.controller.previousProgress;
+}
+
 function createUpgradingSpot(room: Room): void {
     const spawns: StructureSpawn[] = room.find(FIND_MY_SPAWNS);
     const controller: StructureController | undefined = room.controller;
@@ -63,5 +77,6 @@ function initControllerMemory(room: Room): void {
     room.memory.controller = {
         upgradingPosition: null,
         towerPosition: null,
+        previousProgress: room.memory.controller.previousProgress ? room.memory.controller.previousProgress : 0,
     };
 }

@@ -2,6 +2,13 @@ import RoomControllerMemory from './constructions/room-controller-memory.interfa
 import RoomSourcesMemory from './constructions/room-sources-memory.interface';
 
 declare global {
+    interface Memory {
+        tickRateMeter: {
+            lastTimestamp: number;
+            tickRateHistory: number[]; // in ms
+        };
+    }
+
     interface CreepMemory {
         role: string;
         state?: string;

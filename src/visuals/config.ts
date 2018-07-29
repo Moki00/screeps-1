@@ -31,6 +31,13 @@ const rolesVisualConfig: RolesVisualsConfig = {
     },
 };
 
+const defaultTextStyle: TextStyle = {
+    color: 'white',
+    font: '0.3',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundPadding: 0.05,
+};
+
 export function getRoleIcon(role: string): string {
     return rolesVisualConfig[role].icon;
 }
@@ -45,4 +52,8 @@ export function getCreepIcon(creep: Creep): string {
 
 export function getCreepPathStyle(creep: Creep): PolyStyle {
     return getRolePathStyle(getCreepRole(creep));
+}
+
+export function getTextStyle(): TextStyle {
+    return defaultTextStyle;
 }

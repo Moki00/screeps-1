@@ -12,6 +12,7 @@ import updateSafeZones from './safe-mode';
 import updateSpawner from './spawner/spawner';
 import runTower from './tower';
 import errorMapper from './utils/error-mapper';
+import updateTickRateMeter from './utils/tick-rate-meter';
 import {scanAndDrawRoleIcons} from './visuals/draw-creep-role-icon';
 
 export const loop = () => {
@@ -20,7 +21,7 @@ export const loop = () => {
 
 const tick: () => void = () => {
     console.log(`tick ${Game.time}`);
-
+    updateTickRateMeter();
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
     createTowersContructionSites(Game.spawns.Spawn1);
     createStorageConstructionSite(Game.spawns.Spawn1.room);
