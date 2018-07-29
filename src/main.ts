@@ -8,6 +8,7 @@ import runHarvestTransporterRole from './roles/harvest-transporter/run-harvest-t
 import runHarvesterRole from './roles/harvester/run-harvester-role';
 import runRefillerRole from './roles/refiller/run-refiller-role';
 import runUpgraderRole from './roles/upgrader/run-upgrader-role';
+import updateSafeZones from './safe-mode';
 import updateSpawner from './spawner/spawner';
 import runTower from './tower';
 import errorMapper from './utils/error-mapper';
@@ -23,6 +24,7 @@ const tick: () => void = () => {
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
     createTowersContructionSites(Game.spawns.Spawn1);
     createStorageConstructionSite(Game.spawns.Spawn1.room);
+    updateSafeZones();
     updateHarvestBases(Game.spawns.Spawn1.room);
     updateUpgradeBase(Game.spawns.Spawn1.room);
     updateSpawner(Game.spawns.Spawn1);
