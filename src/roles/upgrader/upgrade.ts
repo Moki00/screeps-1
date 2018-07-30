@@ -7,49 +7,40 @@ export default function upgrade(creep: Creep): void {
 
     const upgradingPosition: RoomPosition | null = getUpgradingPosition(creep.room);
 
-    if (controller && upgradingPosition) {
-        if (!isUpgraderOnPlace(creep.room)) {
-            creep.moveTo(upgradingPosition, {
-                visualizePathStyle: getCreepPathStyle(creep),
-            });
-        } else {
-            const container: StructureContainer | undefined = creep.pos.lookFor(LOOK_STRUCTURES)
-                .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
-            if (container) {
-                creep.withdraw(container, RESOURCE_ENERGY);
-            }
-        }
+    if (!controller || !upgradingPosition) {
+        return;
+    }
 
-        const upgradeReturnCode: ScreepsReturnCode = creep.upgradeController(controller);
-        switch (upgradeReturnCode) {
-            case ERR_NOT_ENOUGH_ENERGY:
+    const isCreepOnUpgradingContainer: boolean = creep.pos.isEqualTo(upgradingPosition);
+
+    if (!isCreepOnUpgradingContainer) {
+        creep.moveTo(upgradingPosition, {
+            visualizePathStyle: getCreepPathStyle(creep),
+        });
+    }
+
+    const container: StructureContainer | undefined = getUpgradingContainer(creep.room);
+    if (container && creep.pos.isNearTo(container.pos)) {
+        creep.withdraw(container, RESOURCE_ENERGY);
+    }
+
+    const upgradeReturnCode: ScreepsReturnCode = creep.upgradeController(controller);
+    switch (upgradeReturnCode) {
+        case ERR_NOT_ENOUGH_ENERGY:
+            if (!container || container.store.energy === 0) {
                 creep.memory.state = UpgraderRoleState.FIND_ENERGY;
-                break;
-        }
-
+            }
+            break;
     }
 }
 
-function isUpgraderOnPlace(room: Room): boolean {
-    const upgrader: Creep | undefined = room
-        .find(FIND_MY_CREEPS)
-        .find((creep) => creep.memory.role === 'upgrader');
+function getUpgradingContainer(room: Room): StructureContainer | undefined {
+    const position: RoomPosition | null = getUpgradingPosition(room);
 
-    if (!upgrader) {
-        return false;
+    if (!position) {
+        return undefined;
     }
 
-    if (
-        !upgrader.room.memory.controller ||
-        !upgrader.room.memory.controller.upgradingPosition ||
-        !upgrader.room.memory.controller.upgradingPosition.x ||
-        !upgrader.room.memory.controller.upgradingPosition.y
-    ) {
-        return false;
-    }
-
-    return (
-        upgrader.pos.x === upgrader.room.memory.controller.upgradingPosition.x &&
-        upgrader.pos.y === upgrader.room.memory.controller.upgradingPosition.y
-    );
+    return position.lookFor(LOOK_STRUCTURES)
+        .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
 }

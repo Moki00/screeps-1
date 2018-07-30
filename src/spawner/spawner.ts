@@ -131,9 +131,10 @@ function spawnHarvestTransporter(spawn: StructureSpawn): void {
 }
 
 function doINeedUpgrader(room: Room): boolean {
-    return !room
+    return room
         .find(FIND_MY_CREEPS)
-        .find((creep) => creep.memory.role === 'upgrader');
+        .filter((creep) => creep.memory.role === 'upgrader')
+        .length < 2;
 }
 
 function doINeedHarvester(room: Room): boolean {
