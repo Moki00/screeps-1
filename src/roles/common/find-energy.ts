@@ -40,7 +40,7 @@ function findTarget(creep: Creep): StructureContainer | StructureStorage | undef
         return Game.getObjectById(creep.memory.withdrawTargetId) as StructureContainer | StructureStorage | undefined;
     }
 
-    if (creep.room.storage) {
+    if (creep.room.storage && creep.room.storage.store.energy) {
         return creep.room.storage;
     }
 
