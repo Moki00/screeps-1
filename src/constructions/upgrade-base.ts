@@ -5,9 +5,14 @@ export default function updateUpgradeBase(room: Room): void {
         return;
     }
 
+    if (!room.memory.controller) {
+        initControllerMemory(room);
+    }
+
     initControllerMemory(room);
 
     createUpgradingSpot(room);
+    checkIfTransporterExist(room);
 
     drawRclStats(room);
 
@@ -52,6 +57,41 @@ export function getUpgradingSpeed(controller: StructureController): number {
     return controller.progress - controller.room.memory.controller.previousProgress;
 }
 
+export function doesUpgradeTransporterExists(room: Room): boolean {
+    return !room.memory.controller.transporterCreepId;
+}
+
+function getTransporterByControllerId(controllerId: string): Creep | undefined {
+    const controller: StructureController | null = Game.getObjectById<StructureController>(controllerId);
+
+    if (!controller) {
+        console.log('Warning: No such controller');
+        return undefined;
+    }
+
+    const upgraderContainer: StructureContainer | null = getUpgraderContainer(controller.room);
+    if (!upgraderContainer) {
+        return undefined;
+    }
+
+    return controller.room.find(FIND_MY_CREEPS)
+        .filter((creep) => creep.memory.role === 'transporter')
+        .find((creep) => creep.memory.transportToObjectId === upgraderContainer.id);
+}
+
+function checkIfTransporterExist(room: Room): void {
+    if (!room.controller) {
+        return;
+    }
+
+    const creep: Creep | undefined = getTransporterByControllerId(room.controller.id);
+    if (creep) {
+        room.memory.controller.transporterCreepId = creep.id;
+    } else {
+        room.memory.controller.transporterCreepId = null;
+    }
+}
+
 function createUpgradingSpot(room: Room): void {
     const spawns: StructureSpawn[] = room.find(FIND_MY_SPAWNS);
     const controller: StructureController | undefined = room.controller;
@@ -78,5 +118,6 @@ function initControllerMemory(room: Room): void {
         upgradingPosition: null,
         towerPosition: null,
         previousProgress: room.memory.controller.previousProgress ? room.memory.controller.previousProgress : 0,
+        transporterCreepId: null,
     };
 }

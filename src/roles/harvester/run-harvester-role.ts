@@ -1,6 +1,5 @@
 import {
-    getAnySourceIdWithoutHarvester,
-    getHarvestingPosition,
+    getAnySourceIdWithoutHarvester, getHarvestingPositionBySourceId,
     getSourceOfHarvester,
 } from '../../constructions/harvest-base';
 import {getCreepPathStyle} from '../../visuals/config';
@@ -20,7 +19,7 @@ export default function runHarvesterRole(creep: Creep): void {
     }
 
     const harvestingPosition: RoomPosition | null = source.id
-        ? getHarvestingPosition(creep.room, source.id) : null;
+        ? getHarvestingPositionBySourceId(source.id) : null;
 
     if (!harvestingPosition) {
         return;

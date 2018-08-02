@@ -9,23 +9,23 @@ const creepDefaultPathStyle: PolyStyle = {
 };
 
 const rolesVisualConfig: RolesVisualsConfig = {
-    'harvester': {
+    harvester: {
         icon: '⛏',
         path: {...creepDefaultPathStyle, stroke: 'Gold'},
     },
-    'refiller': {
+    refiller: {
         icon: '💯',
         path: {...creepDefaultPathStyle, stroke: 'SkyBlue'},
     },
-    'upgrader': {
+    upgrader: {
         icon: '🔝',
         path: {...creepDefaultPathStyle, stroke: 'LightGray'},
     },
-    'builder': {
+    builder: {
         icon: '🔨',
         path: {...creepDefaultPathStyle, stroke: 'Brown'},
     },
-    'harvest-transporter': {
+    transporter: {
         icon: '🚚',
         path: {...creepDefaultPathStyle, stroke: 'DarkKhaki'},
     },

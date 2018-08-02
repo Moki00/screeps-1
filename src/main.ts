@@ -2,11 +2,11 @@ import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
 import createStorageConstructionSite from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
-import updateUpgradeBase from './constructions/upgrade-base';
+import updateUpgradeBase, {doesUpgradeTransporterExists} from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder/run-builder-role';
-import runHarvestTransporterRole from './roles/harvest-transporter/run-harvest-transporter-role';
 import runHarvesterRole from './roles/harvester/run-harvester-role';
 import runRefillerRole from './roles/refiller/run-refiller-role';
+import runTransporterRole from './roles/transporter/run-transporter-role';
 import runUpgraderRole from './roles/upgrader/run-upgrader-role';
 import updateSafeZones from './safe-mode';
 import updateSpawner from './spawner/spawner';
@@ -40,6 +40,10 @@ function runRoles(): void {
     for (const creepName in Game.creeps) {
         const creep: Creep = Game.creeps[creepName];
 
+        if (!creep.id) {
+            break;
+        }
+
         switch (creep.memory.role) {
             case 'upgrader':
                 runUpgraderRole(creep);
@@ -53,8 +57,8 @@ function runRoles(): void {
             case 'refiller':
                 runRefillerRole(creep);
                 break;
-            case 'harvest-transporter':
-                runHarvestTransporterRole(creep);
+            case 'transporter':
+                runTransporterRole(creep);
                 break;
         }
     }

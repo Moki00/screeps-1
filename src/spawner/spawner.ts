@@ -1,4 +1,5 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
+import {doesUpgradeTransporterExists} from '../constructions/upgrade-base';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
@@ -6,7 +7,7 @@ export default function updateSpawner(spawn: StructureSpawn) {
         return;
     }
 
-    if (doINeedHarvestTransporter(spawn.room)) {
+    if (doINeedTransporter(spawn.room)) {
         spawnHarvestTransporter(spawn);
     }
 
@@ -109,7 +110,7 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
 }
 
 function spawnHarvestTransporter(spawn: StructureSpawn): void {
-    const name = `HarvestTransporter-${Game.time}`;
+    const name = `Transporter-${Game.time}`;
 
     spawn.spawnCreep(
         stripBodyParts(
@@ -124,8 +125,7 @@ function spawnHarvestTransporter(spawn: StructureSpawn): void {
         ),
         name, {
             memory: {
-                role: 'harvest-transporter',
-                targetSourceId: getAnySourceIdWithoutTransporter(spawn.room),
+                role: 'transporter',
             },
         });
 }
@@ -134,15 +134,21 @@ function doINeedUpgrader(room: Room): boolean {
     return room
         .find(FIND_MY_CREEPS)
         .filter((creep) => creep.memory.role === 'upgrader')
-        .length < 2;
+        .length < (room.controller ? 4 : 2);
 }
 
 function doINeedHarvester(room: Room): boolean {
     return !!getAnySourceIdWithoutHarvester(room);
 }
 
-function doINeedHarvestTransporter(room: Room): boolean {
-    return !!room.storage && !!getAnySourceIdWithoutTransporter(room);
+function doINeedTransporter(room: Room): boolean {
+    return (
+        !!room.storage &&
+        (
+            !!getAnySourceIdWithoutTransporter(room) ||
+            doesUpgradeTransporterExists(room)
+        )
+    );
 }
 
 function doINeedBuilder(room: Room): boolean {

@@ -4,4 +4,5 @@ export default interface RoomControllerMemory {
     upgradingPosition: SimpleRoomPosition | null;
     towerPosition: SimpleRoomPosition | null;
     previousProgress: number;
+    transporterCreepId: string | null;
 }

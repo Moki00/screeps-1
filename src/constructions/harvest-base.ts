@@ -1,7 +1,9 @@
 import SourceMemory from './source-memory.interface';
 
 export default function updateHarvestBases(room: Room) {
-    initRoomSpawnsMemory(room);
+    if (!room.memory.sources) {
+        initRoomSpawnsMemory(room);
+    }
 
     createHarvestingSpots(room);
 
@@ -24,9 +26,9 @@ export function getAnySourceIdWithoutHarvester(room: Room): string | undefined {
     return undefined;
 }
 
-export function getAnySourceIdWithoutTransporter(room: Room): string | undefined {
+export function getAnySourceIdWithoutTransporter(room: Room): string | null {
     if (!room.memory.sources) {
-        return undefined;
+        return null;
     }
 
     const sourceMemoryWithoutTransporter: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
@@ -36,40 +38,53 @@ export function getAnySourceIdWithoutTransporter(room: Room): string | undefined
         return sourceMemoryWithoutTransporter.sourceId;
     }
 
-    return undefined;
+    return null;
 }
 
-export function getHarvestingPosition(room: Room, sourceId: string): RoomPosition | null {
-    if (!room.memory.sources[sourceId]) {
-        console.log(`Warning: No such source id "${sourceId}" in room ${room.name}.`);
+export function getHarvestingPositionBySourceId(sourceId: string): RoomPosition | null {
+    const source: Source | null = Game.getObjectById(sourceId);
+
+    if (!source) {
         return null;
     }
 
-    if (!room.memory.sources[sourceId].harvestingPosition) {
+    if (!source.room.memory.sources[sourceId]) {
+        console.log(`Warning: No such source id "${sourceId}" in room ${source.room.name}.`);
         return null;
     }
 
-    const { x, y } = room.memory.sources[sourceId].harvestingPosition as {x: number, y: number};
-    return new RoomPosition(x, y, room.name);
+    if (!source.room.memory.sources[sourceId].harvestingPosition) {
+        return null;
+    }
+
+    const { x, y } = source.room.memory.sources[sourceId].harvestingPosition as {x: number, y: number};
+    return new RoomPosition(x, y, source.room.name);
 }
 
 export function getSourceOfHarvester(creep: Creep): Source | null {
     return Game.getObjectById(creep.memory.targetSourceId);
 }
 
-export function getHarvestContainer(creep: Creep): StructureContainer | undefined {
-    if (!creep.memory.targetSourceId) {
-        return undefined;
+export function getHarvestContainerBySourceId(sourceId: string): StructureContainer | null {
+    const source: Source | null = Game.getObjectById(sourceId);
+
+    if (!source) {
+        return null;
     }
 
-    const harvestingPosition: RoomPosition | null = getHarvestingPosition(creep.room, creep.memory.targetSourceId);
+    const harvestingPosition: RoomPosition | null = getHarvestingPositionBySourceId(source.id);
+
     if (!harvestingPosition) {
-        return undefined;
+        return null;
     }
 
     const container: StructureContainer | undefined = harvestingPosition
         .lookFor(LOOK_STRUCTURES)
         .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
+
+    if (!container) {
+        return null;
+    }
 
     return container;
 }
@@ -88,14 +103,18 @@ function getHarvesterBySourceId(sourceId: string): Creep | undefined {
 
 function getTransporterBySourceId(sourceId: string): Creep | undefined {
     const source: Source | null = Game.getObjectById(sourceId);
-    const room: Room | undefined = source ? source.room : undefined;
-    if (!room) {
+    if (!source) {
         return undefined;
     }
 
-    return room.find(FIND_MY_CREEPS)
-        .filter((creep) => creep.memory.role === 'harvest-transporter')
-        .find((creep) => creep.memory.targetSourceId === sourceId);
+    const container: StructureContainer | null = getHarvestContainerBySourceId(sourceId);
+    if (!container) {
+        return undefined;
+    }
+
+    return source.room.find(FIND_MY_CREEPS)
+        .filter((creep) => creep.memory.role === 'transporter')
+        .find((creep) => creep.memory.transportFromObjectId === container.id);
 }
 
 function checkIfHarvestersExist(room: Room): void {

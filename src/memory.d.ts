@@ -14,6 +14,8 @@ declare global {
         state?: string;
         targetSourceId?: string;
         withdrawTargetId?: string;
+        transportFromObjectId?: string;
+        transportToObjectId?: string;
     }
 
     interface RoomMemory {
