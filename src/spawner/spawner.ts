@@ -8,7 +8,7 @@ export default function updateSpawner(spawn: StructureSpawn) {
     }
 
     if (doINeedTransporter(spawn.room)) {
-        spawnHarvestTransporter(spawn);
+        spawnTransporter(spawn);
     }
 
     if (doINeedBuilder(spawn.room)) {
@@ -25,6 +25,10 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedRefiller(spawn.room)) {
         spawnRefillerCreep(spawn);
+    }
+
+    if (doINeedDefender(spawn.room)) {
+        spawnDefenderCreep(spawn);
     }
 }
 
@@ -109,7 +113,7 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
     });
 }
 
-function spawnHarvestTransporter(spawn: StructureSpawn): void {
+function spawnTransporter(spawn: StructureSpawn): void {
     const name = `Transporter-${Game.time}`;
 
     spawn.spawnCreep(
@@ -126,6 +130,29 @@ function spawnHarvestTransporter(spawn: StructureSpawn): void {
         name, {
             memory: {
                 role: 'transporter',
+            },
+        });
+}
+
+function spawnDefenderCreep(spawn: StructureSpawn): void {
+    const name = `Defender-${Game.time}`;
+
+    spawn.spawnCreep(
+        stripBodyParts(
+            [
+                ATTACK, ATTACK, MOVE,
+                ATTACK, ATTACK, MOVE,
+                ATTACK, ATTACK, MOVE,
+                ATTACK, ATTACK, MOVE,
+                ATTACK, ATTACK, MOVE,
+            ],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+            },
+        ),
+        name, {
+            memory: {
+                role: 'defender',
             },
         });
 }
@@ -197,4 +224,8 @@ function doINeedRefiller(room: Room): boolean {
         .find(FIND_MY_CREEPS)
         .filter((creep) => creep.memory.role === 'refiller')
         .length < 2;
+}
+
+function doINeedDefender(room: Room): boolean {
+    return !!room.find(FIND_HOSTILE_CREEPS).length;
 }

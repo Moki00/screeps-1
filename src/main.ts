@@ -2,8 +2,9 @@ import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
 import createStorageConstructionSite from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
-import updateUpgradeBase, {doesUpgradeTransporterExists} from './constructions/upgrade-base';
+import updateUpgradeBase from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder/run-builder-role';
+import runDefenderRole from './roles/defender/run-defender-role';
 import runHarvesterRole from './roles/harvester/run-harvester-role';
 import runRefillerRole from './roles/refiller/run-refiller-role';
 import runTransporterRole from './roles/transporter/run-transporter-role';
@@ -59,6 +60,9 @@ function runRoles(): void {
                 break;
             case 'transporter':
                 runTransporterRole(creep);
+                break;
+            case 'defender':
+                runDefenderRole(creep);
                 break;
         }
     }
