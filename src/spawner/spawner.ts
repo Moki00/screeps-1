@@ -186,10 +186,18 @@ function spawnHooverCreep(spawn: StructureSpawn): void {
 }
 
 function doINeedUpgrader(room: Room): boolean {
-    return room
+    const upgradersCount = room
         .find(FIND_MY_CREEPS)
         .filter((creep) => creep.memory.role === 'upgrader')
-        .length < (room.controller ? 4 : 2);
+        .length;
+
+    let upgradersNeeded = 2;
+
+    if (room.storage) {
+        upgradersNeeded += Math.floor((room.storage.store.energy - 200000) / 250000);
+    }
+
+    return upgradersCount < upgradersNeeded;
 }
 
 function doINeedHarvester(room: Room): boolean {
