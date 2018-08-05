@@ -1,5 +1,6 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
 import {doesUpgradeTransporterExists} from '../constructions/upgrade-base';
+import getSumOfResourcesToClean from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
@@ -29,6 +30,10 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedDefender(spawn.room)) {
         spawnDefenderCreep(spawn);
+    }
+
+    if (doINeedHoover(spawn.room)) {
+        spawnHooverCreep(spawn);
     }
 }
 
@@ -157,6 +162,29 @@ function spawnDefenderCreep(spawn: StructureSpawn): void {
         });
 }
 
+function spawnHooverCreep(spawn: StructureSpawn): void {
+    const name = `Hoover-${Game.time}`;
+
+    spawn.spawnCreep(
+        stripBodyParts(
+            [
+                CARRY, CARRY, MOVE,
+                CARRY, CARRY, MOVE,
+                CARRY, CARRY, MOVE,
+                CARRY, CARRY, MOVE,
+                CARRY, CARRY, MOVE,
+            ],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+            },
+        ),
+        name, {
+            memory: {
+                role: 'hoover',
+            },
+        });
+}
+
 function doINeedUpgrader(room: Room): boolean {
     return room
         .find(FIND_MY_CREEPS)
@@ -228,4 +256,15 @@ function doINeedRefiller(room: Room): boolean {
 
 function doINeedDefender(room: Room): boolean {
     return !!room.find(FIND_HOSTILE_CREEPS).length;
+}
+
+function doINeedHoover(room: Room): boolean {
+    const isHooverExisting: boolean = !!room
+        .find(FIND_MY_CREEPS)
+        .filter((creep) => creep.memory.role === 'hoover')
+        .length;
+    return (
+        !isHooverExisting &&
+        getSumOfResourcesToClean(room) > 500
+    );
 }

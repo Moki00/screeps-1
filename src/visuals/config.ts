@@ -33,6 +33,10 @@ const rolesVisualConfig: RolesVisualsConfig = {
         icon: '🛡',
         path: {...creepDefaultPathStyle, stroke: 'Red'},
     },
+    hoover: {
+        icon: '⚰',
+        path: {...creepDefaultPathStyle, stroke: 'Black'},
+    },
 };
 
 const defaultTextStyle: TextStyle = {

@@ -6,6 +6,7 @@ import updateUpgradeBase from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder/run-builder-role';
 import runDefenderRole from './roles/defender/run-defender-role';
 import runHarvesterRole from './roles/harvester/run-harvester-role';
+import runHooverRole from './roles/hoover/run-hoover-role';
 import runRefillerRole from './roles/refiller/run-refiller-role';
 import runTransporterRole from './roles/transporter/run-transporter-role';
 import runUpgraderRole from './roles/upgrader/run-upgrader-role';
@@ -63,6 +64,9 @@ function runRoles(): void {
                 break;
             case 'defender':
                 runDefenderRole(creep);
+                break;
+            case 'hoover':
+                runHooverRole(creep);
                 break;
         }
     }
