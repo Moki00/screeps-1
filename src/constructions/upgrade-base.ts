@@ -117,7 +117,8 @@ function initControllerMemory(room: Room): void {
     room.memory.controller = {
         upgradingPosition: null,
         towerPosition: null,
-        previousProgress: room.memory.controller.previousProgress ? room.memory.controller.previousProgress : 0,
+        previousProgress: (room.memory.controller && room.memory.controller.previousProgress)
+            ? room.memory.controller.previousProgress : 0,
         transporterCreepId: null,
     };
 }
