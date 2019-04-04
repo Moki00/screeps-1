@@ -14,6 +14,7 @@ export default function findEnergy(creep: Creep, findEnergyOptions: FindEnergyCo
     }
 
     if (!withdrawTarget) {
+        creep.memory.state = findEnergyOptions.onNotEnoughResourcesState;
         return;
     }
 
