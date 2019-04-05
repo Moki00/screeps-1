@@ -1,10 +1,12 @@
+import {getRoomEarlyStorageContainer} from '../../constructions/storage';
 import {getCreepPathStyle} from '../../visuals/config';
 import transferAllResources from '../common/transfer-all-resources';
 import getSumOfResourcesToClean from './get-sum-of-resourcer-to-clean';
 import HooverRoleState from './hoover-role-state';
 
 export default function storeResources(creep: Creep): void {
-    const target: StructureStorage | undefined = creep.room.storage;
+    const target: StructureStorage | StructureContainer | undefined =
+        creep.room.storage || getRoomEarlyStorageContainer(creep.room);
 
     if (!target) {
         console.log(`Warning: storage is the only target and it doesn't exists!`);

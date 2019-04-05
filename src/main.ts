@@ -1,6 +1,6 @@
 import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
-import createStorageConstructionSite from './constructions/storage';
+import createStoragesConstructionSites from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
 import updateUpgradeBase from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder/run-builder-role';
@@ -26,7 +26,7 @@ const tick: () => void = () => {
     updateTickRateMeter();
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
     createTowersContructionSites(Game.spawns.Spawn1);
-    createStorageConstructionSite(Game.spawns.Spawn1.room);
+    createStoragesConstructionSites(Game.spawns.Spawn1.room);
     updateSafeZones();
     updateHarvestBases(Game.spawns.Spawn1.room);
     updateUpgradeBase(Game.spawns.Spawn1.room);

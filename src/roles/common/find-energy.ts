@@ -1,3 +1,4 @@
+import {getRoomEarlyStorageContainer} from '../../constructions/storage';
 import {getCreepPathStyle} from '../../visuals/config';
 import getMostFilledHarvesterContainer from './get-most-filled-harvester-container';
 
@@ -39,6 +40,13 @@ export default function findEnergy(creep: Creep, findEnergyOptions: FindEnergyCo
 function findTarget(creep: Creep): StructureContainer | StructureStorage | undefined {
     if (creep.memory.withdrawTargetId) {
         return Game.getObjectById(creep.memory.withdrawTargetId) as StructureContainer | StructureStorage | undefined;
+    }
+
+    if (!creep.room.storage) {
+        const earlyStorageContainer: StructureContainer | undefined = getRoomEarlyStorageContainer(creep.room);
+        if (earlyStorageContainer && earlyStorageContainer.store.energy) {
+            return earlyStorageContainer;
+        }
     }
 
     if (creep.room.storage && creep.room.storage.store.energy) {
