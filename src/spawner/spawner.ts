@@ -1,4 +1,5 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
+import {getRoomEarlyStorageContainer} from '../constructions/storage';
 import {doesUpgradeTransporterExists} from '../constructions/upgrade-base';
 import getSumOfResourcesToClean from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import stripBodyParts from './helpers/strip-body-parts';
@@ -206,7 +207,7 @@ function doINeedHarvester(room: Room): boolean {
 
 function doINeedTransporter(room: Room): boolean {
     return (
-        !!room.storage &&
+        !!room.storage && !!getRoomEarlyStorageContainer(room) &&
         (
             !!getAnySourceIdWithoutTransporter(room) ||
             doesUpgradeTransporterExists(room)
@@ -267,12 +268,16 @@ function doINeedDefender(room: Room): boolean {
 }
 
 function doINeedHoover(room: Room): boolean {
-    const isHooverExisting: boolean = !!room
+    const allHooversCarryCapacity: number = room
         .find(FIND_MY_CREEPS)
         .filter((creep) => creep.memory.role === 'hoover')
-        .length;
-    return (
-        !isHooverExisting &&
-        getSumOfResourcesToClean(room) > 500
-    );
+        .reduce((carryCapacityAccomulator, currentCreep) => {
+            return carryCapacityAccomulator + currentCreep.carryCapacity;
+        }, 0);
+
+    const resourcesToClean: number = getSumOfResourcesToClean(room);
+
+    return (resourcesToClean * MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO) > allHooversCarryCapacity;
 }
+
+const MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO: number = 0.75;
