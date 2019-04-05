@@ -206,8 +206,9 @@ function doINeedHarvester(room: Room): boolean {
 }
 
 function doINeedTransporter(room: Room): boolean {
+    const isThereAnyStorage: boolean = !!room.storage || !!getRoomEarlyStorageContainer(room);
     return (
-        !!room.storage && !!getRoomEarlyStorageContainer(room) &&
+        isThereAnyStorage &&
         (
             !!getAnySourceIdWithoutTransporter(room) ||
             doesUpgradeTransporterExists(room)

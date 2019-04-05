@@ -11,6 +11,8 @@ export default function transportFrom(creep: Creep): void {
     const withdrawReturnCode: ScreepsReturnCode = creep.withdraw(transportTarget, RESOURCE_ENERGY);
     switch (withdrawReturnCode) {
         case OK:
+        case ERR_NOT_ENOUGH_RESOURCES:
+        case ERR_FULL:
             creep.memory.state = TransporterState.TRANSPORT_TO;
             break;
         case ERR_NOT_IN_RANGE: {
