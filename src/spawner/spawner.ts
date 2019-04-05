@@ -1,6 +1,6 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
-import {doesUpgradeTransporterExists} from '../constructions/upgrade-base';
+import {doesUpgradeTransporterExists, getUpgraderContainer} from '../constructions/upgrade-base';
 import getSumOfResourcesToClean from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import stripBodyParts from './helpers/strip-body-parts';
 
@@ -193,6 +193,13 @@ function doINeedUpgrader(room: Room): boolean {
         .length;
 
     let upgradersNeeded = 2;
+
+    if (!room.storage) {
+        const upgradeContainer: StructureContainer | null = getUpgraderContainer(room);
+        if (upgradeContainer && upgradeContainer.store.energy > upgradeContainer.storeCapacity * 0.9) {
+            upgradersNeeded = upgradersCount + 1;
+        }
+    }
 
     if (room.storage) {
         upgradersNeeded += Math.floor((room.storage.store.energy - 200000) / 250000);
