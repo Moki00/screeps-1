@@ -1,7 +1,7 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
 import {doesUpgradeTransporterExists, getUpgraderContainer} from '../constructions/upgrade-base';
-import getSumOfResourcesToClean from '../roles/hoover/get-sum-of-resourcer-to-clean';
+import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
@@ -283,9 +283,15 @@ function doINeedHoover(room: Room): boolean {
             return carryCapacityAccomulator + currentCreep.carryCapacity;
         }, 0);
 
-    const resourcesToClean: number = getSumOfResourcesToClean(room);
+    const resourcesToClean: ResourcesToClean = getSumOfResourcesToClean(room);
 
-    return (resourcesToClean * MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO) > allHooversCarryCapacity;
+    return (
+        resourcesToClean.energy > MAX_DROPPED_ENERGY_ALLOWED &&
+        resourcesToClean.minerals > MAX_DROPPED_MINERALS_ALLOWED &&
+        (resourcesToClean.all * MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO) > allHooversCarryCapacity
+    );
 }
 
 const MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO: number = 0.75;
+const MAX_DROPPED_ENERGY_ALLOWED: number = 300;
+const MAX_DROPPED_MINERALS_ALLOWED: number = 0;

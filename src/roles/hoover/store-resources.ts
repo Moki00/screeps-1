@@ -24,7 +24,7 @@ export default function storeResources(creep: Creep): void {
             break;
     }
 
-    if (!isCreepCarryingAnything(creep) && getSumOfResourcesToClean(creep.room) === 0) {
+    if (!isCreepCarryingAnything(creep) && getSumOfResourcesToClean(creep.room).all === 0) {
         creep.suicide();
     }
 
