@@ -1,3 +1,4 @@
+import {isThereAnyStorageInRoom} from '../../constructions/storage';
 import findEnergy from '../common/find-energy';
 import build from './build';
 import harvest from './harvest';
@@ -16,7 +17,9 @@ export default function runRefillerRole(creep: Creep): void {
         case RefillerRoleState.FIND_ENERGY:
             findEnergy(creep, {
                 onWithdrawState: RefillerRoleState.REFILL,
-                onNotEnoughResourcesState: RefillerRoleState.HARVEST,
+                onNotEnoughResourcesState: isThereAnyStorageInRoom(creep.room)
+                    ? RefillerRoleState.FIND_ENERGY
+                    : RefillerRoleState.HARVEST,
             });
             break;
         case RefillerRoleState.HARVEST:

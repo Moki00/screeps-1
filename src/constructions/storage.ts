@@ -47,3 +47,10 @@ export function getRoomEarlyStorageContainer(room: Room): StructureContainer | u
 
     return container;
 }
+
+export function isThereAnyStorageInRoom(room: Room): boolean {
+    const earlyStorage: StructureContainer | undefined = getRoomEarlyStorageContainer(room);
+    const storage: StructureStorage | undefined = room.storage;
+
+    return !!earlyStorage && !!storage;
+}
