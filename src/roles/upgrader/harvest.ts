@@ -17,7 +17,7 @@ export default function harvest(creep: Creep): void {
     const hasUpgradeContainerEnoughEnergy: boolean =
         !!upgradeContainer && (upgradeContainer.store.energy > (upgradeContainer.storeCapacity * 0.1));
 
-    if (creep.carry.energy >= creep.carryCapacity && hasUpgradeContainerEnoughEnergy) {
+    if ((creep.carry.energy >= creep.carryCapacity) || hasUpgradeContainerEnoughEnergy) {
         creep.memory.state = UpgraderRoleState.UPGRADE;
     }
 }
