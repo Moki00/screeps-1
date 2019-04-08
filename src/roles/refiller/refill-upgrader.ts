@@ -26,6 +26,9 @@ export default function refillUpgrader(creep: Creep): void {
                 visualizePathStyle: getCreepPathStyle(creep),
             });
             break;
+        case ERR_FULL:
+            creep.memory.state = RefillerRoleState.REFILL;
+            break;
     }
 
     if (creep.carry.energy === 0) {
