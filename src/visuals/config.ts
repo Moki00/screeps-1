@@ -9,6 +9,10 @@ const creepDefaultPathStyle: PolyStyle = {
 };
 
 const rolesVisualConfig: RolesVisualsConfig = {
+    unknown: {
+        icon: '?',
+        path: {...creepDefaultPathStyle, stroke: 'White'},
+    },
     harvester: {
         icon: '⛏',
         path: {...creepDefaultPathStyle, stroke: 'Gold'},

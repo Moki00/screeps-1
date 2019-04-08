@@ -10,7 +10,7 @@ export function drawCreepRoleIcon(creep: Creep) {
         backgroundColor: 'transparent',
         backgroundPadding: 0,
         align: 'center',
-        opacity: 0.9,
+        opacity: 0.6,
     });
 }
 
