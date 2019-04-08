@@ -13,10 +13,6 @@ export default function updateSpawner(spawn: StructureSpawn) {
         spawnTransporter(spawn);
     }
 
-    if (doINeedBuilder(spawn.room)) {
-        spawnBuilderCreep(spawn);
-    }
-
     if (doINeedHarvester(spawn.room)) {
         spawnHarvesterCreep(spawn);
     }
@@ -31,6 +27,10 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedDefender(spawn.room)) {
         spawnDefenderCreep(spawn);
+    }
+
+    if (doINeedBuilder(spawn.room)) {
+        spawnBuilderCreep(spawn);
     }
 
     if (doINeedHoover(spawn.room)) {
