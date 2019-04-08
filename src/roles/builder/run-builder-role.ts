@@ -12,6 +12,7 @@ export default function runBuilderRole(creep: Creep): void {
             findEnergy(creep, {
                 onWithdrawState: BuilderRoleState.BUILD,
                 onNotEnoughResourcesState: BuilderRoleState.FIND_ENERGY,
+                reserveEnergyForEmptyExtensions: true,
             });
             break;
         case BuilderRoleState.REPAIR:

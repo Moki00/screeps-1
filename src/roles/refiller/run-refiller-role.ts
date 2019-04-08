@@ -20,6 +20,7 @@ export default function runRefillerRole(creep: Creep): void {
                 onNotEnoughResourcesState: isThereAnyStorageInRoom(creep.room)
                     ? RefillerRoleState.FIND_ENERGY
                     : RefillerRoleState.HARVEST,
+                reserveEnergyForEmptyExtensions: false,
             });
             break;
         case RefillerRoleState.HARVEST:
@@ -32,6 +33,7 @@ export default function runRefillerRole(creep: Creep): void {
             findEnergy(creep, {
                 onWithdrawState: RefillerRoleState.REFILL,
                 onNotEnoughResourcesState: RefillerRoleState.HARVEST,
+                reserveEnergyForEmptyExtensions: false,
             });
     }
 }
