@@ -286,8 +286,10 @@ function doINeedHoover(room: Room): boolean {
     const resourcesToClean: ResourcesToClean = getSumOfResourcesToClean(room);
 
     return (
-        resourcesToClean.energy > MAX_DROPPED_ENERGY_ALLOWED &&
-        resourcesToClean.minerals > MAX_DROPPED_MINERALS_ALLOWED &&
+        (
+            resourcesToClean.energy > MAX_DROPPED_ENERGY_ALLOWED ||
+            resourcesToClean.minerals > MAX_DROPPED_MINERALS_ALLOWED
+        ) &&
         (resourcesToClean.all * MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO) > allHooversCarryCapacity
     );
 }
