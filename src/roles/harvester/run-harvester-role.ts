@@ -33,7 +33,7 @@ export default function runHarvesterRole(creep: Creep): void {
     switch (harvestReturnCode) {
         case OK:
         case ERR_NOT_ENOUGH_RESOURCES: {
-            takeCareOfContainerUnder(creep);
+            maintainStructures(creep);
             saveDroppedEnergy(creep);
             break;
         }
@@ -41,6 +41,15 @@ export default function runHarvesterRole(creep: Creep): void {
             break;
         }
     }
+}
+
+function maintainStructures(creep: Creep): void {
+    if (Game.time % 10 === 0) {
+        repairHarvestersRampart(creep);
+        return;
+    }
+
+    takeCareOfContainerUnder(creep);
 }
 
 function takeCareOfContainerUnder(creep: Creep): void {
@@ -64,9 +73,22 @@ function repairHarvestersContainer(creep: Creep): void {
     }
 }
 
+function repairHarvestersRampart(creep: Creep): void {
+    const rampart: StructureRampart | undefined = creep.pos.lookFor(LOOK_STRUCTURES)
+        .find((structure) => structure.structureType === STRUCTURE_RAMPART) as StructureRampart | undefined;
+    if (!rampart) {
+        return;
+    }
+
+    const desiredHits: number = rampart.hitsMax / 100;
+    if (rampart.hits < desiredHits) {
+        creep.repair(rampart);
+    }
+}
+
 function buildHarvestersContainerConstructionSite(creep: Creep): void {
     const constructionSite: ConstructionSite | undefined = creep.pos.lookFor(LOOK_CONSTRUCTION_SITES)
-        .find((site) => site.structureType === STRUCTURE_CONTAINER) as ConstructionSite | undefined;
+        .find(isContainerOrRampartConstructionSite) as ConstructionSite | undefined;
     if (!constructionSite) {
         return;
     }
@@ -85,4 +107,9 @@ function saveDroppedEnergy(creep: Creep) {
     }
 
     creep.pickup(energyResource);
+}
+
+function isContainerOrRampartConstructionSite(site: ConstructionSite): boolean {
+    const structures: StructureConstant[] = [STRUCTURE_CONTAINER, STRUCTURE_RAMPART];
+    return structures.includes(site.structureType);
 }

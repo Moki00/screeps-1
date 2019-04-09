@@ -172,6 +172,7 @@ function createHarvestingSpots(room: Room): void {
                 });
 
             room.createConstructionSite(pathSteps[0].x, pathSteps[0].y, STRUCTURE_CONTAINER);
+            room.createConstructionSite(pathSteps[0].x, pathSteps[0].y, STRUCTURE_RAMPART);
             room.memory.sources[source.id].harvestingPosition = {
                 x: pathSteps[0].x,
                 y: pathSteps[0].y,
