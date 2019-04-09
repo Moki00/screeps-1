@@ -192,7 +192,7 @@ function doINeedUpgrader(room: Room): boolean {
         .filter((creep) => creep.memory.role === 'upgrader')
         .length;
 
-    let upgradersNeeded = 2;
+    let upgradersNeeded = 1;
 
     if (!room.storage) {
         const upgradeContainer: StructureContainer | null = getUpgraderContainer(room);
@@ -202,7 +202,10 @@ function doINeedUpgrader(room: Room): boolean {
     }
 
     if (room.storage) {
-        upgradersNeeded += Math.floor((room.storage.store.energy - 200000) / 250000);
+        upgradersNeeded += Math.max(
+            0,
+            Math.floor((room.storage.store.energy) / 20000),
+        );
     }
 
     return upgradersCount < upgradersNeeded;
