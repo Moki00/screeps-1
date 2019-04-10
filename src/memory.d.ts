@@ -3,6 +3,11 @@ import RoomSourcesMemory from './constructions/room-sources-memory.interface';
 
 declare global {
     interface Memory {
+        [name: string]: any;
+        creeps: { [name: string]: CreepMemory };
+        flags: { [name: string]: FlagMemory };
+        rooms: { [name: string]: RoomMemory };
+        spawns: { [name: string]: SpawnMemory };
         tickRateMeter: {
             lastTimestamp: number;
             tickRateHistory: number[]; // in ms
