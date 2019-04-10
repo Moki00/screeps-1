@@ -7,6 +7,7 @@ import runBuilderRole from './roles/builder/run-builder-role';
 import runDefenderRole from './roles/defender/run-defender-role';
 import runHarvesterRole from './roles/harvester/run-harvester-role';
 import runHooverRole from './roles/hoover/run-hoover-role';
+import runLooterRole from './roles/looter/run-looter-role';
 import runRefillerRole from './roles/refiller/run-refiller-role';
 import runTransporterRole from './roles/transporter/run-transporter-role';
 import runUpgraderRole from './roles/upgrader/run-upgrader-role';
@@ -22,7 +23,6 @@ export const loop = () => {
 };
 
 const tick: () => void = () => {
-    console.log(`tick ${Game.time}`);
     updateTickRateMeter();
     createExtensionsContructionSites(Game.spawns.Spawn1.room);
     createTowersContructionSites(Game.spawns.Spawn1);
@@ -36,6 +36,10 @@ const tick: () => void = () => {
     scanAndDrawRoleIcons();
 
     cleanCreepsMemory();
+
+    console.log(`tick ${Game.time} | cpu: ${
+        Math.ceil(Game.cpu.getUsed() * 100) / 100
+    } / ${Game.cpu.limit} + ${Game.cpu.bucket}`);
 };
 
 function runRoles(): void {
@@ -67,6 +71,9 @@ function runRoles(): void {
                 break;
             case 'hoover':
                 runHooverRole(creep);
+                break;
+            case 'looter':
+                runLooterRole(creep);
                 break;
         }
     }

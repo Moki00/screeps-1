@@ -2,6 +2,7 @@ import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
 import {doesUpgradeTransporterExists, getUpgraderContainer} from '../constructions/upgrade-base';
 import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-sum-of-resourcer-to-clean';
+import {isLootFlagSet} from '../roles/looter/run-looter-role';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
@@ -35,6 +36,10 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedHoover(spawn.room)) {
         spawnHooverCreep(spawn);
+    }
+
+    if (doINeedLooter(spawn.room)) {
+        spawnLooterCreep(spawn);
     }
 }
 
@@ -186,6 +191,34 @@ function spawnHooverCreep(spawn: StructureSpawn): void {
         });
 }
 
+function spawnLooterCreep(spawn: StructureSpawn): void {
+    const name = `Looter-${Game.time}`;
+
+    spawn.spawnCreep(
+        stripBodyParts(
+            [
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+            ],
+            {
+                maxEnergyCost: spawn.room.energyAvailable,
+            },
+        ),
+        name, {
+            memory: {
+                role: 'looter',
+            },
+        });
+}
+
 function doINeedUpgrader(room: Room): boolean {
     const upgradersCount = room
         .find(FIND_MY_CREEPS)
@@ -295,6 +328,10 @@ function doINeedHoover(room: Room): boolean {
         ) &&
         (resourcesToClean.all * MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO) > allHooversCarryCapacity
     );
+}
+
+function doINeedLooter(room: Room): boolean {
+    return isLootFlagSet() && room.energyAvailable === room.energyCapacityAvailable;
 }
 
 const MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO: number = 0.75;

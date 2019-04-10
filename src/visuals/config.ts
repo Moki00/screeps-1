@@ -41,6 +41,10 @@ const rolesVisualConfig: RolesVisualsConfig = {
         icon: '⚰',
         path: {...creepDefaultPathStyle, stroke: 'Black'},
     },
+    looter: {
+        icon: '💰',
+        path: {...creepDefaultPathStyle, stroke: 'Gold'},
+    },
 };
 
 const defaultTextStyle: TextStyle = {
@@ -51,10 +55,16 @@ const defaultTextStyle: TextStyle = {
 };
 
 export function getRoleIcon(role: string): string {
+    if (!rolesVisualConfig[role]) {
+        role = 'unknown';
+    }
     return rolesVisualConfig[role].icon;
 }
 
 export function getRolePathStyle(role: string): PolyStyle {
+    if (!rolesVisualConfig[role]) {
+        role = 'unknown';
+    }
     return rolesVisualConfig[role].path;
 }
 
