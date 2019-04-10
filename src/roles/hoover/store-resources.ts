@@ -1,5 +1,6 @@
 import {getRoomEarlyStorageContainer} from '../../constructions/storage';
 import {getCreepPathStyle} from '../../visuals/config';
+import recycle from '../common/recycle';
 import transferAllResources from '../common/transfer-all-resources';
 import getSumOfResourcesToClean from './get-sum-of-resourcer-to-clean';
 import HooverRoleState from './hoover-role-state';
@@ -25,7 +26,7 @@ export default function storeResources(creep: Creep): void {
     }
 
     if (!isCreepCarryingAnything(creep) && getSumOfResourcesToClean(creep.room).all === 0) {
-        creep.suicide();
+        recycle(creep);
     }
 
     if (!isCreepCarryingAnything(creep)) {

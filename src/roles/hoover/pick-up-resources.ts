@@ -16,7 +16,9 @@ export default function pickUpResources(creep: Creep): void {
         const withdrawReturnCode: ScreepsReturnCode = withdrawAllResources(creep, tombstone);
         switch (withdrawReturnCode) {
             case ERR_NOT_IN_RANGE:
-                creep.moveTo(tombstone);
+                creep.moveTo(tombstone, {
+                    visualizePathStyle: getCreepPathStyle(creep),
+                });
                 break;
             case ERR_NOT_ENOUGH_RESOURCES:
                 break;

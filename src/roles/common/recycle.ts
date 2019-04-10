@@ -1,3 +1,4 @@
+import {getRoomEarlyStorageContainer} from '../../constructions/storage';
 import {getCreepPathStyle} from '../../visuals/config';
 
 export default function recycle(creep: Creep): void {
@@ -10,11 +11,20 @@ export default function recycle(creep: Creep): void {
         return;
     }
 
-    creep.moveTo(spawn, {
+    const recycleContainer: StructureContainer | undefined = getRoomEarlyStorageContainer(creep.room);
+
+    const moveTarget: StructureSpawn | StructureContainer = recycleContainer ? recycleContainer : spawn;
+
+    if (!recycleContainer) {
+        creep.suicide();
+        return;
+    }
+
+    creep.moveTo(recycleContainer, {
         visualizePathStyle: getCreepPathStyle(creep),
     });
 
-    if (creep.pos.isNearTo(spawn)) {
+    if (creep.pos.isEqualTo(moveTarget) && creep.pos.isNearTo(spawn)) {
         spawn.recycleCreep(creep);
     }
 }
