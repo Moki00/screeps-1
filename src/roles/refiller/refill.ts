@@ -37,7 +37,7 @@ function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExte
     const structures: AnyStructure[] = creep.room
         .find(FIND_STRUCTURES);
 
-    const extensions: StructureExtension[] = structures
+    const emptyExtensions: StructureExtension[] = structures
         .filter((structure) => {
             return (
                 structure.structureType === STRUCTURE_EXTENSION &&
@@ -45,8 +45,10 @@ function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExte
             );
         }) as StructureExtension[];
 
-    if (extensions.length) {
-        return extensions[0];
+    const closestEmptyExtension: StructureExtension | null = creep.pos.findClosestByRange(emptyExtensions);
+
+    if (closestEmptyExtension) {
+        return closestEmptyExtension;
     }
 
     const towers: StructureTower[] = structures
