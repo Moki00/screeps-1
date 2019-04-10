@@ -112,7 +112,7 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
 
     spawn.spawnCreep(
         stripBodyParts(
-            [MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY],
+            [MOVE, CARRY, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, CARRY, CARRY],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
             },
