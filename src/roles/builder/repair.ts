@@ -1,3 +1,4 @@
+import {getRoomEarlyStorageContainer} from '../../constructions/storage';
 import {getUpgraderContainer} from '../../constructions/upgrade-base';
 import {getCreepPathStyle} from '../../visuals/config';
 import BuilderRoleState from './builder-role-state';
@@ -7,7 +8,8 @@ export default function repair(creep: Creep): void {
 }
 
 function repairUpgradeContainer(creep: Creep): void {
-    const container: StructureContainer | null = getUpgraderContainer(creep.room);
+    const container: StructureContainer | null =
+        getRoomEarlyStorageContainer(creep.room) || getUpgraderContainer(creep.room);
 
     if (!container) {
         creep.memory.state = BuilderRoleState.BUILD;
