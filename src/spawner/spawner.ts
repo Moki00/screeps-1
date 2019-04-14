@@ -3,10 +3,26 @@ import {getRoomEarlyStorageContainer} from '../constructions/storage';
 import {doesUpgradeTransporterExists, getUpgraderContainer} from '../constructions/upgrade-base';
 import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import {isLootFlagSet} from '../roles/looter/run-looter-role';
+import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
+import isRoleNeededByAnySquad from '../squads/common/is-role-needed-by-any-squad';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
-    if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY) {
+    if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY || spawn.spawning) {
+        return;
+    }
+
+    if (doINeedRefiller(spawn.room)) {
+        spawnRefillerCreep(spawn);
+    }
+
+    if (isRoleNeededByAnySquad('combo-squad-medic')) {
+        spawnComboSquadMedic(spawn);
+        return;
+    }
+
+    if (isRoleNeededByAnySquad('combo-squad-attacker')) {
+        spawnComboSquadAttacker(spawn);
         return;
     }
 
@@ -20,10 +36,6 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedUpgrader(spawn.room)) {
         spawnUpgraderCreep(spawn);
-    }
-
-    if (doINeedRefiller(spawn.room)) {
-        spawnRefillerCreep(spawn);
     }
 
     if (doINeedDefender(spawn.room)) {
@@ -219,6 +231,72 @@ function spawnLooterCreep(spawn: StructureSpawn): void {
         });
 }
 
+function spawnComboSquadMedic(spawn: StructureSpawn): void {
+    const role: string = 'combo-squad-medic';
+    const name: string = `${role}-${Game.time}`;
+    console.log(`spawn ${name}`);
+
+    const assignedSquad: SquadMemory | undefined = getSquadWhichNeedsRole(role);
+
+    if (!assignedSquad) {
+        console.log(`Warning: Abort spawning "${name}" creep.`);
+        return;
+    }
+
+    spawn.spawnCreep(
+        [
+            TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+            TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+            MOVE, MOVE, MOVE, MOVE, MOVE,
+            MOVE, MOVE, MOVE, MOVE, MOVE,
+            MOVE, MOVE, MOVE, MOVE,
+            HEAL, HEAL, HEAL, HEAL,
+        ],
+        name,
+        {
+            memory: {
+                role,
+                squadName: assignedSquad.name,
+            },
+        },
+    );
+}
+
+function spawnComboSquadAttacker(spawn: StructureSpawn): void {
+    const role: string = 'combo-squad-attacker';
+    const name: string = `${role}-${Game.time}`;
+    console.log(`spawn ${name}`);
+
+    const assignedSquad: SquadMemory | undefined = getSquadWhichNeedsRole(role);
+
+    if (!assignedSquad) {
+        console.log(`Warning: Abort spawning "${name}" creep.`);
+        return;
+    }
+
+    spawn.spawnCreep(
+        [
+            TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+            TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+            TOUGH,
+            MOVE, MOVE, MOVE, MOVE, MOVE,
+            MOVE, MOVE, MOVE, MOVE, MOVE,
+            MOVE, MOVE, MOVE, MOVE, MOVE,
+            MOVE, MOVE, MOVE,
+            ATTACK, ATTACK, ATTACK, ATTACK, ATTACK,
+            ATTACK, ATTACK, ATTACK,
+            MOVE,
+        ],
+        name,
+        {
+            memory: {
+                role: 'combo-squad-attacker',
+                squadName: assignedSquad.name,
+            },
+        },
+    );
+}
+
 function doINeedUpgrader(room: Room): boolean {
     const upgradersCount = room
         .find(FIND_MY_CREEPS)
@@ -237,7 +315,7 @@ function doINeedUpgrader(room: Room): boolean {
     if (room.storage) {
         upgradersNeeded += Math.max(
             0,
-            Math.floor((room.storage.store.energy) / 20000),
+            Math.floor((room.storage.store.energy - 100000) / 20000),
         );
     }
 

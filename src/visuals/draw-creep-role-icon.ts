@@ -1,10 +1,10 @@
-import {getCreepIcon} from './config';
+import {getCreepIcon, ROLE_FONT_SIZE} from './config';
 
 export function drawCreepRoleIcon(creep: Creep) {
     const char: string = getCreepIcon(creep);
     new RoomVisual(creep.room.name).text(char, creep.pos, {
         color: '#fff',
-        font: '0.5 Symbola',
+        font: `${ROLE_FONT_SIZE} Symbola`,
         stroke: '#000',
         strokeWidth: 0.05,
         backgroundColor: 'transparent',

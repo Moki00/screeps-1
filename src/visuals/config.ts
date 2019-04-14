@@ -9,41 +9,49 @@ const creepDefaultPathStyle: PolyStyle = {
 };
 
 const rolesVisualConfig: RolesVisualsConfig = {
-    unknown: {
+    'unknown': {
         icon: '?',
         path: {...creepDefaultPathStyle, stroke: 'White'},
     },
-    harvester: {
+    'harvester': {
         icon: '⛏',
         path: {...creepDefaultPathStyle, stroke: 'Gold'},
     },
-    refiller: {
+    'refiller': {
         icon: '💯',
         path: {...creepDefaultPathStyle, stroke: 'SkyBlue'},
     },
-    upgrader: {
+    'upgrader': {
         icon: '🔝',
         path: {...creepDefaultPathStyle, stroke: 'LightGray'},
     },
-    builder: {
+    'builder': {
         icon: '🔨',
         path: {...creepDefaultPathStyle, stroke: 'Brown'},
     },
-    transporter: {
+    'transporter': {
         icon: '🚚',
         path: {...creepDefaultPathStyle, stroke: 'DarkKhaki'},
     },
-    defender: {
+    'defender': {
         icon: '🛡',
         path: {...creepDefaultPathStyle, stroke: 'Red'},
     },
-    hoover: {
+    'hoover': {
         icon: '⚰',
         path: {...creepDefaultPathStyle, stroke: 'Black'},
     },
-    looter: {
+    'looter': {
         icon: '💰',
         path: {...creepDefaultPathStyle, stroke: 'Gold'},
+    },
+    'combo-squad-medic': {
+        icon: '⚕',
+        path: {...creepDefaultPathStyle, stroke: 'Lime'},
+    },
+    'combo-squad-attacker': {
+        icon: '⚔',
+        path: {...creepDefaultPathStyle, stroke: 'Red'},
     },
 };
 
@@ -79,3 +87,5 @@ export function getCreepPathStyle(creep: Creep): PolyStyle {
 export function getTextStyle(): TextStyle {
     return defaultTextStyle;
 }
+
+export const ROLE_FONT_SIZE: number = 0.5;
