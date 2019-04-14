@@ -2,11 +2,18 @@ import {isThereAnyStorageInRoom} from '../../constructions/storage';
 import findEnergy from '../common/find-energy';
 import build from './build';
 import harvest from './harvest';
-import refillEnergy from './refill';
+import refillEnergy, {getRoomEnergyRefillTarget} from './refill';
 import refillUpgrader from './refill-upgrader';
 import RefillerRoleState from './refiller-role-state';
 
 export default function runRefillerRole(creep: Creep): void {
+    if (
+        creep.memory.state === RefillerRoleState.REFILL_UPGRADER &&
+        getRoomEnergyRefillTarget(creep)
+    ) {
+        creep.memory.state = RefillerRoleState.REFILL;
+    }
+
     switch (creep.memory.state) {
         case RefillerRoleState.REFILL:
             refillEnergy(creep);

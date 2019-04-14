@@ -24,7 +24,7 @@ export default function refillEnergy(creep: Creep): void {
     }
 }
 
-function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExtension | StructureTower | null {
+export function getRoomEnergyRefillTarget(creep: Creep): StructureSpawn | StructureExtension | StructureTower | null {
     const spawns: StructureSpawn[] = creep.room
         .find(FIND_MY_SPAWNS)
         .filter((spawn) => spawn.energy < spawn.energyCapacity)
