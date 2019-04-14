@@ -8,8 +8,11 @@ export default function repair(creep: Creep): void {
 }
 
 function repairUpgradeContainer(creep: Creep): void {
+    const earlyStorageContainer: StructureContainer | undefined = getRoomEarlyStorageContainer(creep.room);
     const container: StructureContainer | null =
-        getRoomEarlyStorageContainer(creep.room) || getUpgraderContainer(creep.room);
+        earlyStorageContainer && (earlyStorageContainer.hits < earlyStorageContainer.hitsMax)
+            ? earlyStorageContainer
+            : getUpgraderContainer(creep.room);
 
     if (!container) {
         creep.memory.state = BuilderRoleState.BUILD;
