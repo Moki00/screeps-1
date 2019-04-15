@@ -1,3 +1,4 @@
+import basicHarvest from '../common/basic-harvest';
 import findEnergy from '../common/find-energy';
 import build from './build';
 import BuilderRoleState from './builder-role-state';
@@ -11,12 +12,17 @@ export default function runBuilderRole(creep: Creep): void {
         case BuilderRoleState.FIND_ENERGY:
             findEnergy(creep, {
                 onWithdrawState: BuilderRoleState.BUILD,
-                onNotEnoughResourcesState: BuilderRoleState.FIND_ENERGY,
+                onNotEnoughResourcesState: BuilderRoleState.HARVEST,
                 reserveEnergyForEmptyExtensions: true,
             });
             break;
         case BuilderRoleState.REPAIR:
             repair(creep);
+            break;
+        case BuilderRoleState.HARVEST:
+            basicHarvest(creep, {
+                onCarryFullState: BuilderRoleState.BUILD,
+            });
             break;
         default:
             build(creep);

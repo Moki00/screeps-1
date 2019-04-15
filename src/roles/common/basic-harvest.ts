@@ -1,7 +1,6 @@
 import {getCreepPathStyle} from '../../visuals/config';
-import RefillerRoleState from './refiller-role-state';
 
-export default function harvest(creep: Creep): void {
+export default function basicHarvest(creep: Creep, options: BasicHarvestOptions): void {
     const source: Source = creep.room.find(FIND_SOURCES)[0];
     const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
 
@@ -12,6 +11,10 @@ export default function harvest(creep: Creep): void {
     }
 
     if (creep.carry.energy >= creep.carryCapacity) {
-        creep.memory.state = RefillerRoleState.REFILL;
+        creep.memory.state = options.onCarryFullState;
     }
+}
+
+export interface BasicHarvestOptions {
+    onCarryFullState: string;
 }

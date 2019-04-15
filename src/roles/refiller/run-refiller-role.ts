@@ -1,7 +1,7 @@
 import {isThereAnyStorageInRoom} from '../../constructions/storage';
+import basicHarvest from '../common/basic-harvest';
 import findEnergy from '../common/find-energy';
 import build from './build';
-import harvest from './harvest';
 import refillEnergy, {getRoomEnergyRefillTarget} from './refill';
 import refillUpgrader from './refill-upgrader';
 import RefillerRoleState from './refiller-role-state';
@@ -31,7 +31,9 @@ export default function runRefillerRole(creep: Creep): void {
             });
             break;
         case RefillerRoleState.HARVEST:
-            harvest(creep);
+            basicHarvest(creep, {
+                onCarryFullState: RefillerRoleState.REFILL,
+            });
             break;
         case RefillerRoleState.BUILD:
             build(creep);
