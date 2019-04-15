@@ -1,10 +1,12 @@
 import {getCreepPathStyle} from '../../visuals/config';
+import recycle from '../common/recycle';
 import TransporterState from './transporter-state';
 
 export default function transportFrom(creep: Creep): void {
     const transportTarget: StructureContainer | StructureStorage | null = getTransporterTargetObject(creep);
     if (!transportTarget) {
         console.log(`Warning: No transport target for transporter '${creep.name}'.`);
+        recycle(creep);
         return;
     }
 

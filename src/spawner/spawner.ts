@@ -1,6 +1,10 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
-import {doesUpgradeTransporterExists, getUpgraderContainer} from '../constructions/upgrade-base';
+import {
+    doesUpgradersContainerExist,
+    doesUpgradeTransporterExist,
+    getUpgraderContainer,
+} from '../constructions/upgrade-base';
 import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import {isLootFlagSet} from '../roles/looter/run-looter-role';
 import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
@@ -332,7 +336,7 @@ function doINeedTransporter(room: Room): boolean {
         isThereAnyStorage &&
         (
             !!getAnySourceIdWithoutTransporter(room) ||
-            doesUpgradeTransporterExists(room)
+            (doesUpgradeTransporterExist(room) && doesUpgradersContainerExist(room))
         )
     );
 }

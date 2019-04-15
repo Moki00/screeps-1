@@ -57,8 +57,22 @@ export function getUpgradingSpeed(controller: StructureController): number {
     return controller.progress - controller.room.memory.controller.previousProgress;
 }
 
-export function doesUpgradeTransporterExists(room: Room): boolean {
+export function doesUpgradeTransporterExist(room: Room): boolean {
     return !room.memory.controller.transporterCreepId;
+}
+
+export function doesUpgradersContainerExist(room: Room): boolean {
+    if (!room.memory.controller.upgradingPosition) {
+        return false;
+    }
+
+    return !!room
+        .lookForAt(
+            LOOK_STRUCTURES,
+            room.memory.controller.upgradingPosition.x,
+            room.memory.controller.upgradingPosition.y,
+        )
+        .find((structure) => structure.structureType === STRUCTURE_CONTAINER);
 }
 
 function getTransporterByControllerId(controllerId: string): Creep | undefined {
