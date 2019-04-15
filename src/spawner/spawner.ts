@@ -12,8 +12,24 @@ export default function updateSpawner(spawn: StructureSpawn) {
         return;
     }
 
-    if (doINeedRefiller(spawn.room)) {
-        spawnRefillerCreep(spawn);
+    if (doINeedLooter(spawn.room)) {
+        spawnLooterCreep(spawn);
+    }
+
+    if (doINeedHoover(spawn.room)) {
+        spawnHooverCreep(spawn);
+    }
+
+    if (doINeedBuilder(spawn.room)) {
+        spawnBuilderCreep(spawn);
+    }
+
+    if (doINeedDefender(spawn.room)) {
+        spawnDefenderCreep(spawn);
+    }
+
+    if (doINeedUpgrader(spawn.room)) {
+        spawnUpgraderCreep(spawn);
     }
 
     if (isRoleNeededByAnySquad('combo-squad-medic')) {
@@ -34,24 +50,8 @@ export default function updateSpawner(spawn: StructureSpawn) {
         spawnHarvesterCreep(spawn);
     }
 
-    if (doINeedUpgrader(spawn.room)) {
-        spawnUpgraderCreep(spawn);
-    }
-
-    if (doINeedDefender(spawn.room)) {
-        spawnDefenderCreep(spawn);
-    }
-
-    if (doINeedBuilder(spawn.room)) {
-        spawnBuilderCreep(spawn);
-    }
-
-    if (doINeedHoover(spawn.room)) {
-        spawnHooverCreep(spawn);
-    }
-
-    if (doINeedLooter(spawn.room)) {
-        spawnLooterCreep(spawn);
+    if (doINeedRefiller(spawn.room)) {
+        spawnRefillerCreep(spawn);
     }
 }
 
