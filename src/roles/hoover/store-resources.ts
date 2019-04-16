@@ -1,4 +1,5 @@
 import {getRoomEarlyStorageContainer} from '../../constructions/storage';
+import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 import recycle from '../common/recycle';
 import transferAllResources from '../common/transfer-all-resources';
@@ -10,7 +11,7 @@ export default function storeResources(creep: Creep): void {
         creep.room.storage || getRoomEarlyStorageContainer(creep.room);
 
     if (!target) {
-        console.log(`Warning: storage is the only target and it doesn't exists!`);
+        Logger.warning(`storage is the only target and it doesn't exists!`);
         return;
     }
 

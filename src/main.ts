@@ -21,6 +21,7 @@ import runSquads from './squads/common/run-squads';
 import updateDeadSquadCreeps from './squads/common/update-dead-squad-creeps';
 import runTower from './tower';
 import errorMapper from './utils/error-mapper';
+import Logger from './utils/logger';
 import updateTickRateMeter from './utils/tick-rate-meter';
 import {scanAndDrawRoleIcons} from './visuals/draw-creep-role-icon';
 import drawSquadsVisual from './visuals/draw-squads';
@@ -30,7 +31,7 @@ export const loop = () => {
 };
 
 const tick: () => void = () => {
-    console.log(`tick ${Game.time}`);
+    Logger.info(`tick ${Game.time}`);
     updateTickRateMeter();
 
     if (isComboSquadNeeded()) {
@@ -53,7 +54,7 @@ const tick: () => void = () => {
     updateDeadSquadCreeps();
     cleanCreepsMemory();
 
-    // console.log(`cpu: ${Math.ceil(Game.cpu.getUsed() * 100) / 100} / ${Game.cpu.limit} + ${Game.cpu.bucket}`);
+    Logger.info(`cpu: ${Math.ceil(Game.cpu.getUsed() * 100) / 100} / ${Game.cpu.limit} + ${Game.cpu.bucket}`);
 };
 
 function runRoles(): void {

@@ -1,3 +1,4 @@
+import Logger from '../../../../utils/logger';
 import {getCreepPathStyle} from '../../../../visuals/config';
 import {COMBO_SQUAD_ROOM_TARGET_FLAG_NAME} from '../../run-combo-squad';
 
@@ -41,7 +42,7 @@ export default function attack(creep: Creep): void {
     const targetToKill: Creep | null = Game.getObjectById<Creep>(squad.targetToKillId);
 
     if (!targetToKill) {
-        console.log(`Warning: "${squad.name}" has non existing kill target (id "${squad.targetToKillId}").`);
+        Logger.warning(`"${squad.name}" has non existing kill target (id "${squad.targetToKillId}").`);
         return;
     }
 

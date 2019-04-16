@@ -40,7 +40,6 @@ function removeDeadSquads(): void {
         const sqaud: SquadMemory = Memory.squads[squadName];
 
         if (isSquadDead(sqaud)) {
-            console.log(`Remove "${sqaud.name}" squad.`);
             delete Memory.squads[squadName];
         }
     }

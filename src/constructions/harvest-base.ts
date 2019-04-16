@@ -1,3 +1,4 @@
+import Logger from '../utils/logger';
 import SourceMemory from './source-memory.interface';
 
 export default function updateHarvestBases(room: Room) {
@@ -49,7 +50,7 @@ export function getHarvestingPositionBySourceId(sourceId: string): RoomPosition 
     }
 
     if (!source.room.memory.sources[sourceId]) {
-        console.log(`Warning: No such source id "${sourceId}" in room ${source.room.name}.`);
+        Logger.warning(`No such source id "${sourceId}" in room ${source.room.name}.`);
         return null;
     }
 

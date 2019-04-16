@@ -1,3 +1,4 @@
+import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 import recycle from '../common/recycle';
 import withdrawAllResources from '../common/withdraw-all-resources';
@@ -7,7 +8,7 @@ import {LOOT_FLAG_NAME} from './run-looter-role';
 export function loot(creep: Creep): void {
     const lootFlag: Flag | undefined = Game.flags[LOOT_FLAG_NAME];
     if (!lootFlag) {
-        console.log('No loot flag, no loot target.');
+        Logger.warning('No loot flag, no loot target.');
         recycle(creep);
         return;
     }
@@ -27,7 +28,7 @@ export function loot(creep: Creep): void {
     const lootTarget: StructureStorage | undefined = lootFlag.room.storage;
 
     if (!lootTarget) {
-        console.log(`There are no more loot targets in ${lootFlag.room.name} room.`);
+        Logger.info(`There are no more loot targets in ${lootFlag.room.name} room. Removing "${lootFlag.name}" flag.`);
         lootFlag.remove();
         return;
     }

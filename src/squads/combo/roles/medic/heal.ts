@@ -1,3 +1,4 @@
+import Logger from '../../../../utils/logger';
 import {getCreepPathStyle} from '../../../../visuals/config';
 
 export default function heal(creep: Creep): void {
@@ -14,7 +15,7 @@ export default function heal(creep: Creep): void {
     const healTarget: Creep | null = Game.getObjectById<Creep>(squad.targetToHealId);
 
     if (!healTarget) {
-        console.log(`Warning: "${squad.name}" has non existing heal target (id "${squad.targetToHealId}").`);
+        Logger.warning(`"${squad.name}" has non existing heal target (id "${squad.targetToHealId}").`);
         return;
     }
 

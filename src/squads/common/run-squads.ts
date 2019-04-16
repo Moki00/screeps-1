@@ -1,3 +1,4 @@
+import Logger from '../../utils/logger';
 import runComboSquad from '../combo/run-combo-squad';
 
 export default function runSquads(): void {
@@ -11,7 +12,7 @@ export default function runSquads(): void {
                 runComboSquad(squad);
                 break;
             default:
-                console.log(`Warning: Unknown "${squad.type}" squad!`);
+                Logger.warning(`Unknown "${squad.type}" squad!`);
                 break;
         }
     });

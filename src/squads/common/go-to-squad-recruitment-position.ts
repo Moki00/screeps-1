@@ -1,3 +1,4 @@
+import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 
 export function goToSquadRecruitmentPosition(creep: Creep, options: GoToSquadLineOptions): void {
@@ -6,7 +7,7 @@ export function goToSquadRecruitmentPosition(creep: Creep, options: GoToSquadLin
     }
 
     if (!creep.memory.squadName) {
-        console.log(`Warning: creep "${creep.memory.role}" has no required squad data!`);
+        Logger.warning(`creep "${creep.memory.role}" has no required squad data!`);
         return;
     }
 

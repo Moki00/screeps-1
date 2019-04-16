@@ -1,3 +1,4 @@
+import Logger from '../utils/logger';
 import drawRclStats from '../visuals/draw-rcl-stats';
 
 export default function updateUpgradeBase(room: Room): void {
@@ -79,7 +80,7 @@ function getTransporterByControllerId(controllerId: string): Creep | undefined {
     const controller: StructureController | null = Game.getObjectById<StructureController>(controllerId);
 
     if (!controller) {
-        console.log('Warning: No such controller');
+        Logger.warning('No such controller');
         return undefined;
     }
 

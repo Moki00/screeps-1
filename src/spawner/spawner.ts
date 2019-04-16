@@ -9,6 +9,7 @@ import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-su
 import {isLootFlagSet} from '../roles/looter/run-looter-role';
 import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
 import isRoleNeededByAnySquad from '../squads/common/is-role-needed-by-any-squad';
+import Logger from '../utils/logger';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
@@ -238,12 +239,11 @@ function spawnLooterCreep(spawn: StructureSpawn): void {
 function spawnComboSquadMedic(spawn: StructureSpawn): void {
     const role: string = 'combo-squad-medic';
     const name: string = `${role}-${Game.time}`;
-    console.log(`spawn ${name}`);
 
     const assignedSquad: SquadMemory | undefined = getSquadWhichNeedsRole(role);
 
     if (!assignedSquad) {
-        console.log(`Warning: Abort spawning "${name}" creep.`);
+        Logger.warning(`Abort spawning "${name}" creep.`);
         return;
     }
 
@@ -269,12 +269,11 @@ function spawnComboSquadMedic(spawn: StructureSpawn): void {
 function spawnComboSquadAttacker(spawn: StructureSpawn): void {
     const role: string = 'combo-squad-attacker';
     const name: string = `${role}-${Game.time}`;
-    console.log(`spawn ${name}`);
 
     const assignedSquad: SquadMemory | undefined = getSquadWhichNeedsRole(role);
 
     if (!assignedSquad) {
-        console.log(`Warning: Abort spawning "${name}" creep.`);
+        Logger.warning(`Abort spawning "${name}" creep.`);
         return;
     }
 

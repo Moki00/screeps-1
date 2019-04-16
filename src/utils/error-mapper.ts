@@ -1,5 +1,6 @@
 import { escape } from 'lodash';
 import { MappedPosition, SourceMapConsumer } from 'source-map'; // leave it at version ^0.6.1. ^0.7 is async only.
+import Logger from './logger';
 
 export default function errorMapper(tick: () => void): () => void {
     return () => {
@@ -67,12 +68,12 @@ function getSourceMapStackTrace(error: Error | string): string {
 
 function printOriginalError(error: Error) {
     const message = `Source maps don't work in the Simulation mode.`;
-    console.log(`<span style="color: tomato">${message}\n${escape(error.stack)}</span>`);
+    Logger.error(`${message}\n${escape(error.stack)}`);
 }
 
 function printStackTrace(error: Error) {
     const errorMessage = escape(getSourceMapStackTrace(error));
-    console.log(`<span style="color: tomato">${errorMessage}</span>`);
+    Logger.error(`${errorMessage}`);
     Game.notify(errorMessage);
 }
 
