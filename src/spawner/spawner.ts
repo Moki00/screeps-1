@@ -7,14 +7,20 @@ import {
 } from '../constructions/upgrade-base';
 import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import {isLootFlagSet} from '../roles/looter/run-looter-role';
+import {SETTLER_FLAG_NAME} from '../roles/settler/run-settler-role';
 import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
 import isRoleNeededByAnySquad from '../squads/common/is-role-needed-by-any-squad';
 import Logger from '../utils/logger';
+import getBodyPartsCost from './helpers/get-body-parts-cost';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
     if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY || spawn.spawning) {
         return;
+    }
+
+    if (doINeedSettler(spawn.room)) {
+        spawnSettlerCreep(spawn);
     }
 
     if (doINeedLooter(spawn.room)) {
@@ -60,6 +66,24 @@ export default function updateSpawner(spawn: StructureSpawn) {
     }
 }
 
+function spawnSettlerCreep(spawn: StructureSpawn): void {
+    const name = `Settler-${Game.time}`;
+    Logger.info(`Spawning ${name} creep,`);
+
+    spawn.spawnCreep(
+        stripBodyParts(
+            [CLAIM, MOVE],
+        ),
+        name,
+        {
+            memory: {
+                originRoom: spawn.room.name,
+                role: 'settler',
+            },
+        },
+    );
+}
+
 function spawnUpgraderCreep(spawn: StructureSpawn): void {
     const name = `Upgrader-${Game.time}`;
 
@@ -77,6 +101,7 @@ function spawnUpgraderCreep(spawn: StructureSpawn): void {
         name,
         {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'upgrader',
             },
         },
@@ -99,6 +124,7 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
         name,
         {
         memory: {
+                originRoom: spawn.room.name,
             role: 'harvester',
             targetSourceId: getAnySourceIdWithoutHarvester(spawn.room),
         },
@@ -110,7 +136,14 @@ function spawnBuilderCreep(spawn: StructureSpawn): void {
 
     spawn.spawnCreep(
         stripBodyParts(
-            [WORK, CARRY, MOVE, WORK, CARRY, MOVE, WORK, CARRY, MOVE],
+            [
+                WORK, CARRY, MOVE,
+                WORK, CARRY, MOVE,
+                WORK, CARRY, MOVE,
+                WORK, CARRY, MOVE,
+                WORK, CARRY, MOVE,
+                WORK, CARRY, MOVE,
+            ],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
             },
@@ -118,6 +151,7 @@ function spawnBuilderCreep(spawn: StructureSpawn): void {
         name,
         {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'builder',
             },
         },
@@ -136,6 +170,7 @@ function spawnRefillerCreep(spawn: StructureSpawn): void {
         ),
         name, {
         memory: {
+                originRoom: spawn.room.name,
             role: 'refiller',
         },
     });
@@ -157,6 +192,7 @@ function spawnTransporter(spawn: StructureSpawn): void {
         ),
         name, {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'transporter',
             },
         });
@@ -180,6 +216,7 @@ function spawnDefenderCreep(spawn: StructureSpawn): void {
         ),
         name, {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'defender',
             },
         });
@@ -203,6 +240,7 @@ function spawnHooverCreep(spawn: StructureSpawn): void {
         ),
         name, {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'hoover',
             },
         });
@@ -231,6 +269,7 @@ function spawnLooterCreep(spawn: StructureSpawn): void {
         ),
         name, {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'looter',
             },
         });
@@ -259,6 +298,7 @@ function spawnComboSquadMedic(spawn: StructureSpawn): void {
         name,
         {
             memory: {
+                originRoom: spawn.room.name,
                 role,
                 squadName: assignedSquad.name,
             },
@@ -293,11 +333,19 @@ function spawnComboSquadAttacker(spawn: StructureSpawn): void {
         name,
         {
             memory: {
+                originRoom: spawn.room.name,
                 role: 'combo-squad-attacker',
                 squadName: assignedSquad.name,
             },
         },
     );
+}
+
+function doINeedSettler(room: Room): boolean {
+    const settleFlag: Flag | undefined = Game.flags[SETTLER_FLAG_NAME];
+    const minimalClaimerSpawnCost: number = getBodyPartsCost([CLAIM, MOVE]);
+    const doesSettleExists: boolean = Object.values(Game.creeps).some((creep) => creep.memory.role === 'settler');
+    return !!settleFlag && room.energyCapacityAvailable > minimalClaimerSpawnCost && !doesSettleExists;
 }
 
 function doINeedUpgrader(room: Room): boolean {

@@ -17,18 +17,25 @@ declare global {
 
     interface CreepMemory {
         role: string;
+        originRoom: string;
         state?: string;
         squadName?: string;
         targetSourceId?: string;
         withdrawTargetId?: string;
         transportFromObjectId?: string;
         transportToObjectId?: string;
+        buildTargetObjectId?: string;
     }
 
     interface RoomMemory {
         sources: RoomSourcesMemory;
         controller: RoomControllerMemory;
         spawnQueue: string[];
+        anotherRoomsHelp: AnotherRoomSettleHelp;
+    }
+
+    interface AnotherRoomSettleHelp {
+        firstSpawnPosition?: SimpleRoomPosition;
     }
 
     interface SquadMemory {

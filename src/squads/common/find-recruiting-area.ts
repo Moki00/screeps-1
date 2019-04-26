@@ -3,9 +3,11 @@ import SimpleRoomPosition from '../../constructions/simple-room-position.interfa
 
 export default function findSquadRecruitingArea(room: Room, numberOfCreeps: number): SimpleRoomPosition[] {
     const areaDimensions: Dimensions2D = getRecruitmentAreaDimensions(numberOfCreeps);
+    const spawn: StructureSpawn = room.find(FIND_MY_SPAWNS).find(() => true)!;
+
     const topLeftRoomPosition: RoomPosition = new RoomPosition( // TODO: don't hardcode it
-        Game.spawns.Spawn1.pos.x,
-        Game.spawns.Spawn1.pos.y - 10,
+        spawn.pos.x,
+        spawn.pos.y - 10,
         room.name,
     );
 

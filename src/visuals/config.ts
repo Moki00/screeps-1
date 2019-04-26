@@ -53,6 +53,10 @@ const rolesVisualConfig: RolesVisualsConfig = {
         icon: '⚔',
         path: {...creepDefaultPathStyle, stroke: 'Red'},
     },
+    'settler': {
+        icon: '🏠',
+        path: {...creepDefaultPathStyle, stroke: 'HotPink'},
+    },
 };
 
 const defaultTextStyle: TextStyle = {

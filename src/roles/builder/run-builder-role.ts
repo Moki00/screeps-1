@@ -14,6 +14,7 @@ export default function runBuilderRole(creep: Creep): void {
                 onWithdrawState: BuilderRoleState.BUILD,
                 onNotEnoughResourcesState: BuilderRoleState.HARVEST,
                 reserveEnergyForEmptyExtensions: true,
+                targetRoom: creep.memory.originRoom,
             });
             break;
         case BuilderRoleState.REPAIR:

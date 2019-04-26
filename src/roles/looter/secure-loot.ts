@@ -4,7 +4,7 @@ import recycle from '../common/recycle';
 import LooterState from './looter-state';
 
 export function secureLoot(creep: Creep): void {
-    const homeRoom: Room = Game.spawns.Spawn1.room;
+    const homeRoom: Room = Game.rooms[creep.memory.originRoom];
     const transferTarget: StructureStorage | undefined = homeRoom.storage;
     if (!transferTarget) {
         Logger.warning('No storage to secure loot!');
