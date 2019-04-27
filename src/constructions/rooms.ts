@@ -12,9 +12,9 @@ export function getMyClaimedRoomsWithSpawners(): Room[] {
     return getMyClaimedRooms().filter((room) => room.find(FIND_MY_SPAWNS).length > 0);
 }
 
-export function getRoomWithClosestStorageFromPosition(position: RoomPosition): Room | undefined {
+export function getRoomWithMyClosestStorageFromPosition(position: RoomPosition): Room | undefined {
     const allMyStorageRooms: Room[] = Object.values(Game.rooms)
-        .filter((room) => room.storage);
+        .filter((room) => room.storage && room.storage.my);
 
     if (!allMyStorageRooms) {
         Logger.warning('No room with storage found.');
@@ -65,6 +65,26 @@ export function updateFirstSpawnsHelp(): void {
     cleanFirstSpawnsHelpMemory();
 }
 
+export function updateRooms(): void {
+    Object.values(Game.rooms).forEach((room) => removeHostileStructuresAndConstructionSites(room));
+}
+
+export function removeHostileStructuresAndConstructionSites(room: Room): void {
+    if (!isRoomMine(room)) {
+        return;
+    }
+
+    room.find(FIND_HOSTILE_STRUCTURES)
+        .forEach((hostileStructure) => hostileStructure.destroy());
+
+    room.find(FIND_HOSTILE_CONSTRUCTION_SITES)
+        .forEach((hostileConstructionSite) => hostileConstructionSite.remove());
+}
+
+export function isRoomMine(room: Room): boolean {
+    return !!(room.controller && room.controller.my);
+}
+
 function detectAndCreateFirstSpawnsHelpMemory(): void {
     const roomsRequiringFirstSpawnHelp: Room[] = getMyClaimedRoomsWithNoSpawners();
 
@@ -77,7 +97,7 @@ function detectAndCreateFirstSpawnsHelpMemory(): void {
             return;
         }
 
-        const helpingRoom: Room | undefined = getRoomWithClosestStorageFromPosition(spawnContructionSite.pos);
+        const helpingRoom: Room | undefined = getRoomWithMyClosestStorageFromPosition(spawnContructionSite.pos);
 
         if (!helpingRoom) {
             Logger.warning(`There is no room which could help room "${roomWithNoSpawn.name}" ` +
@@ -109,12 +129,15 @@ function cleanFirstSpawnsHelpMemory(): void {
     const roomsWithSpawners: Room[] = getMyClaimedRoomsWithSpawners();
     roomsWithSpawners.forEach((roomWithSpawn) => {
         Object.values(Game.rooms).forEach((room) => {
-            if (
+            const canRoomBeAccessed: boolean = !!Game.rooms[room.name];
+            const hasHelpedRoomSpawnPlaced: boolean = !!(
                 room.memory.anotherRoomsHelp.firstSpawnPosition &&
                 room.memory.anotherRoomsHelp.firstSpawnPosition.room === roomWithSpawn.name
-            ) {
+            );
+
+            if (hasHelpedRoomSpawnPlaced || !canRoomBeAccessed) {
                 Logger.info(`Room "${room.name}" stopped helping room ` +
-                `"${room.memory.anotherRoomsHelp.firstSpawnPosition.room} with its first spawn."`);
+                `"${room.memory.anotherRoomsHelp.firstSpawnPosition!.room} with its first spawn."`);
                 delete room.memory.anotherRoomsHelp.firstSpawnPosition;
             }
         });

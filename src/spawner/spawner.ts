@@ -10,6 +10,8 @@ import {isLootFlagSet} from '../roles/looter/run-looter-role';
 import {SETTLER_FLAG_NAME} from '../roles/settler/run-settler-role';
 import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
 import isRoleNeededByAnySquad from '../squads/common/is-role-needed-by-any-squad';
+import getHitsToBuild from '../utils/get-hits-to-build';
+import getHitsToRepair from '../utils/get-hits-to-repair';
 import Logger from '../utils/logger';
 import getBodyPartsCost from './helpers/get-body-parts-cost';
 import stripBodyParts from './helpers/strip-body-parts';
@@ -137,12 +139,16 @@ function spawnBuilderCreep(spawn: StructureSpawn): void {
     spawn.spawnCreep(
         stripBodyParts(
             [
-                WORK, CARRY, MOVE,
-                WORK, CARRY, MOVE,
-                WORK, CARRY, MOVE,
-                WORK, CARRY, MOVE,
-                WORK, CARRY, MOVE,
-                WORK, CARRY, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
+                WORK, CARRY, MOVE, MOVE,
             ],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
@@ -400,25 +406,16 @@ function doINeedBuilder(room: Room): boolean {
         .map((creep) => creep.ticksToLive!)
         .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
 
-    const hitsToRepair: number = room.find(FIND_STRUCTURES)
-        .filter((structure) => {
-            if (structure.hits === undefined) {
-                return false;
-            }
+    const hitsToRepair: number = getHitsToRepair(room);
 
-            const ignoredConstructionTypes: string[] = [STRUCTURE_RAMPART, STRUCTURE_WALL];
-            return !ignoredConstructionTypes
-                .find((structureType) => structureType === structure.structureType);
-        })
-        .map((structure) => {
-
-            return structure.hitsMax - structure.hits;
-        })
-        .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
-
-    const hitsToBuild: number = room.find(FIND_MY_CONSTRUCTION_SITES)
-        .map((constructionSite) => constructionSite.progressTotal - constructionSite.progress)
-        .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+    let hitsToBuild: number = getHitsToBuild(room);
+    if (
+        room.memory.anotherRoomsHelp.firstSpawnPosition &&
+        room.memory.anotherRoomsHelp.firstSpawnPosition.room &&
+        Game.rooms[room.memory.anotherRoomsHelp.firstSpawnPosition.room]
+    ) {
+        hitsToBuild += getHitsToBuild(Game.rooms[room.memory.anotherRoomsHelp.firstSpawnPosition.room]);
+    }
 
     const ticksToRepair: number = Math.ceil(hitsToRepair / REPAIR_POWER);
     const ticksToBuild: number = Math.ceil(hitsToBuild / BUILD_POWER);

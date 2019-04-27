@@ -48,6 +48,9 @@ function findBuildTarget(room: Room): ConstructionSite | undefined {
 }
 
 function getAnotherRoomFirstSpawnConstructionSite(room: Room): ConstructionSite | undefined {
+    if (room.controller && !room.controller.my) {
+        return undefined;
+    }
     if (!room.memory.anotherRoomsHelp.firstSpawnPosition) {
         return undefined;
     }

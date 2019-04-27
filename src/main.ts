@@ -2,8 +2,8 @@ import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
 import {
     getMyClaimedRooms,
-    getRoomWithClosestStorageFromPosition,
-    updateFirstSpawnsHelp,
+    getRoomWithMyClosestStorageFromPosition,
+    updateFirstSpawnsHelp, updateRooms,
 } from './constructions/rooms';
 import createStoragesConstructionSites from './constructions/storage';
 import createTowersContructionSites from './constructions/towers';
@@ -42,6 +42,7 @@ const tick: () => void = () => {
 
     updateTickRateMeter();
 
+    updateRooms();
     updateFirstSpawnsHelp();
 
     updateComboSquads();
@@ -122,7 +123,7 @@ function runRoles(): void {
 
 function updateComboSquads(): void {
     if (isComboSquadNeeded()) {
-        const room: Room | undefined = getRoomWithClosestStorageFromPosition(
+        const room: Room | undefined = getRoomWithMyClosestStorageFromPosition(
             Game.flags[COMBO_SQUAD_ROOM_TARGET_FLAG_NAME].pos,
         );
         if (!room) {
