@@ -2,10 +2,11 @@ import createExtensionsContructionSites from './constructions/extensions';
 import updateHarvestBases from './constructions/harvest-base';
 import {
     getMyClaimedRooms,
-    getRoomWithMyClosestStorageFromPosition,
-    updateFirstSpawnsHelp, updateRooms,
+    getRoomWithMyClosestStorageFromPosition, removeHostileStructuresAndConstructionSites,
+    updateFirstSpawnsHelp,
 } from './constructions/rooms';
 import createStoragesConstructionSites from './constructions/storage';
+import updateTerminal from './constructions/terminal';
 import createTowersContructionSites from './constructions/towers';
 import updateUpgradeBase from './constructions/upgrade-base';
 import runBuilderRole from './roles/builder/run-builder-role';
@@ -42,12 +43,13 @@ const tick: () => void = () => {
 
     updateTickRateMeter();
 
-    updateRooms();
     updateFirstSpawnsHelp();
 
     updateComboSquads();
 
     getMyClaimedRooms().forEach((room) => {
+        removeHostileStructuresAndConstructionSites(room);
+
         const firstSpawn: StructureSpawn | undefined = room.find(FIND_MY_SPAWNS).find(() => true);
         if (!firstSpawn) {
             return;
@@ -60,6 +62,7 @@ const tick: () => void = () => {
         updateHarvestBases(room);
         updateUpgradeBase(room);
         updateSpawner(firstSpawn);
+        updateTerminal(room);
         runTowers(room);
     });
 

@@ -65,10 +65,6 @@ export function updateFirstSpawnsHelp(): void {
     cleanFirstSpawnsHelpMemory();
 }
 
-export function updateRooms(): void {
-    Object.values(Game.rooms).forEach((room) => removeHostileStructuresAndConstructionSites(room));
-}
-
 export function removeHostileStructuresAndConstructionSites(room: Room): void {
     if (!isRoomMine(room)) {
         return;
