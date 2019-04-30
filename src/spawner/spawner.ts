@@ -1,5 +1,6 @@
 import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
+import {doesTerminalNeedTransporter} from '../constructions/terminal';
 import {
     doesUpgradersContainerExist,
     doesUpgradeTransporterExist,
@@ -385,11 +386,13 @@ function doINeedHarvester(room: Room): boolean {
 
 function doINeedTransporter(room: Room): boolean {
     const isThereAnyStorage: boolean = !!room.storage || !!getRoomEarlyStorageContainer(room);
+
     return (
         isThereAnyStorage &&
         (
             !!getAnySourceIdWithoutTransporter(room) ||
-            (doesUpgradeTransporterExist(room) && doesUpgradersContainerExist(room))
+            (!doesUpgradeTransporterExist(room) && doesUpgradersContainerExist(room)) ||
+            !!(room.terminal && doesTerminalNeedTransporter(room.terminal))
         )
     );
 }

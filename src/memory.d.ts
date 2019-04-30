@@ -24,6 +24,7 @@ declare global {
         withdrawTargetId?: string;
         transportFromObjectId?: string;
         transportToObjectId?: string;
+        transportResourcesProgram?: string;
         buildTargetObjectId?: string;
     }
 

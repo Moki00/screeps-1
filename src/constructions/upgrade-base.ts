@@ -59,7 +59,7 @@ export function getUpgradingSpeed(controller: StructureController): number {
 }
 
 export function doesUpgradeTransporterExist(room: Room): boolean {
-    return !room.memory.controller.transporterCreepId;
+    return !!room.memory.controller.transporterCreepId;
 }
 
 export function doesUpgradersContainerExist(room: Room): boolean {
@@ -76,7 +76,7 @@ export function doesUpgradersContainerExist(room: Room): boolean {
         .find((structure) => structure.structureType === STRUCTURE_CONTAINER);
 }
 
-function getTransporterByControllerId(controllerId: string): Creep | undefined {
+export function getTransporterByControllerId(controllerId: string): Creep | undefined {
     const controller: StructureController | null = Game.getObjectById<StructureController>(controllerId);
 
     if (!controller) {
@@ -90,8 +90,12 @@ function getTransporterByControllerId(controllerId: string): Creep | undefined {
     }
 
     return controller.room.find(FIND_MY_CREEPS)
-        .filter((creep) => creep.memory.role === 'transporter')
-        .find((creep) => creep.memory.transportToObjectId === upgraderContainer.id);
+        .find((creep) => {
+            return (
+                creep.memory.role === 'transporter' &&
+                creep.memory.transportToObjectId === upgraderContainer.id
+            );
+        });
 }
 
 function checkIfTransporterExist(room: Room): void {

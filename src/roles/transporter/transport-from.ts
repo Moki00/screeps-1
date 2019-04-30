@@ -1,17 +1,33 @@
+import {hasTerminalTooLittleEnergy} from '../../constructions/terminal';
+import AnyStorableStructure from '../../utils/any-storable-structure.type';
+import isCreepCarryingAnything from '../../utils/is-creep-carrying-anything';
 import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 import recycle from '../common/recycle';
+import TRANSPORT_NEEDED_RESOURCES_PROGRAM from './transport-needed-resources-program';
 import TransporterState from './transporter-state';
 
 export default function transportFrom(creep: Creep): void {
-    const transportTarget: StructureContainer | StructureStorage | null = getTransporterTargetObject(creep);
+    const transportTarget: AnyStorableStructure | null = getTransporterTargetObject(creep);
     if (!transportTarget) {
-        Logger.warning(`No transport target for transporter '${creep.name}'.`);
+        Logger.warning(`No transport (from) target for transporter '${creep.name}'.`);
         recycle(creep);
         return;
     }
 
-    const withdrawReturnCode: ScreepsReturnCode = creep.withdraw(transportTarget, RESOURCE_ENERGY);
+    const withdrawResource: ResourceConstant | null = getNextWithdrawResource(creep);
+    if (!withdrawResource && !isCreepCarryingAnything(creep)) {
+        Logger.warning(`Creep ${creep.name} has nothing more to transport.`);
+        recycle(creep);
+        return;
+    }
+
+    if (!withdrawResource) {
+        creep.memory.state = TransporterState.TRANSPORT_TO;
+        return;
+    }
+
+    const withdrawReturnCode: ScreepsReturnCode = creep.withdraw(transportTarget, withdrawResource);
     switch (withdrawReturnCode) {
         case OK:
         case ERR_NOT_ENOUGH_RESOURCES:
@@ -27,10 +43,45 @@ export default function transportFrom(creep: Creep): void {
     }
 }
 
-function getTransporterTargetObject(creep: Creep): StructureContainer | StructureStorage | null {
+function getTransporterTargetObject(creep: Creep): AnyStorableStructure | null {
     if (!creep.memory.transportFromObjectId) {
         return null;
     }
 
-    return Game.getObjectById<StructureContainer | StructureStorage>(creep.memory.transportFromObjectId);
+    return Game.getObjectById(creep.memory.transportFromObjectId);
+}
+
+function getNextWithdrawResource(transporterCreep: Creep): ResourceConstant | null {
+    const transportResourcesProgram: string | undefined = transporterCreep.memory.transportResourcesProgram;
+
+    switch (transportResourcesProgram) {
+        case TRANSPORT_NEEDED_RESOURCES_PROGRAM.ENERGY_ONLY:
+            return RESOURCE_ENERGY;
+        case TRANSPORT_NEEDED_RESOURCES_PROGRAM.FOR_TERMINAL:
+            const storage: StructureStorage | undefined = transporterCreep.room.storage;
+            const terminal: StructureTerminal | undefined = transporterCreep.room.terminal;
+
+            if (!storage || !terminal) {
+                Logger.warning(`Room ${transporterCreep.room.name} ` +
+                    `needs to have storage and terminal for terminal transporter.`);
+                return null;
+            }
+
+            const anyMineral: ResourceConstant | undefined = Object.keys(storage.store)
+                .find((resource) => resource !== RESOURCE_ENERGY) as ResourceConstant;
+
+            if (anyMineral) {
+                return anyMineral;
+            }
+
+            if (hasTerminalTooLittleEnergy(terminal)) {
+                return RESOURCE_ENERGY;
+            }
+
+            return null;
+
+        default:
+            Logger.warning(`Creep ${transporterCreep.name} has no transportResourcesProgram!`);
+            return RESOURCE_ENERGY;
+    }
 }

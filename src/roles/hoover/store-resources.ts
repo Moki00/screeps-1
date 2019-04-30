@@ -1,4 +1,5 @@
 import {getRoomEarlyStorageContainer} from '../../constructions/storage';
+import isCreepCarryingAnything from '../../utils/is-creep-carrying-anything';
 import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 import recycle from '../common/recycle';
@@ -33,8 +34,4 @@ export default function storeResources(creep: Creep): void {
     if (!isCreepCarryingAnything(creep)) {
         creep.memory.state = HooverRoleState.CLEAN;
     }
-}
-
-function isCreepCarryingAnything(creep: Creep): boolean {
-    return !!Object.values(creep.carry).find((resourceAmount) => resourceAmount > 0);
 }

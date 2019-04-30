@@ -1,15 +1,17 @@
+import AnyStorableStructure from '../../utils/any-storable-structure.type';
 import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
+import transferAllResources from '../common/transfer-all-resources';
 import TransporterState from './transporter-state';
 
 export default function transportTo(creep: Creep): void {
-    const transportTarget: StructureContainer | StructureStorage | null = getTransporterTargetObject(creep);
+    const transportTarget: AnyStorableStructure | null = getTransporterTargetObject(creep);
     if (!transportTarget) {
-        Logger.warning(`No transport target for transporter '${creep.name}'.`);
+        Logger.warning(`No transport (to) target for transporter '${creep.name}'.`);
         return;
     }
 
-    const transferReturnCode: ScreepsReturnCode = creep.transfer(transportTarget, RESOURCE_ENERGY);
+    const transferReturnCode: ScreepsReturnCode = transferAllResources(creep, transportTarget);
     switch (transferReturnCode) {
         case OK:
             creep.memory.state = TransporterState.TRANSPORT_FROM;
@@ -26,10 +28,10 @@ export default function transportTo(creep: Creep): void {
     }
 }
 
-function getTransporterTargetObject(creep: Creep): StructureContainer | StructureStorage | null {
+function getTransporterTargetObject(creep: Creep): AnyStorableStructure | null {
     if (!creep.memory.transportToObjectId) {
         return null;
     }
 
-    return Game.getObjectById<StructureContainer | StructureStorage>(creep.memory.transportToObjectId);
+    return Game.getObjectById(creep.memory.transportToObjectId);
 }

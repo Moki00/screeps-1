@@ -82,7 +82,7 @@ function runRoles(): void {
     for (const creepName in Game.creeps) {
         const creep: Creep = Game.creeps[creepName];
 
-        if (!creep.id) {
+        if (creep.spawning) {
             break;
         }
 
