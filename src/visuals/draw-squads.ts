@@ -1,6 +1,10 @@
-import {getRoleIcon, ROLE_FONT_SIZE} from './config';
+import {getRoleIcon, isVisualEnabled, ROLE_FONT_SIZE, VISUAL_TOGGLES_KEYS} from './config';
 
 export default function drawSquadsVisual(): void {
+    if (!isVisualEnabled(VISUAL_TOGGLES_KEYS.SQUADS)) {
+        return;
+    }
+
     if (!Memory.squads) {
         return;
     }

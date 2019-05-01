@@ -13,6 +13,7 @@ declare global {
             lastTimestamp: number;
             tickRateHistory: number[]; // in ms
         };
+        visualsToggles: { [name: string]: boolean };
     }
 
     interface CreepMemory {

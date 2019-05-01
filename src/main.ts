@@ -31,6 +31,7 @@ import runTower from './tower';
 import errorMapper from './utils/error-mapper';
 import Logger from './utils/logger';
 import updateTickRateMeter from './utils/tick-rate-meter';
+import {updateVisualsToggles} from './visuals/config';
 import {scanAndDrawRoleIcons} from './visuals/draw-creep-role-icon';
 import drawSquadsVisual from './visuals/draw-squads';
 
@@ -42,7 +43,7 @@ const tick: () => void = () => {
     Logger.info(`tick ${Game.time}`);
 
     updateTickRateMeter();
-
+    updateVisualsToggles();
     updateFirstSpawnsHelp();
 
     updateComboSquads();

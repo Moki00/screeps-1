@@ -1,5 +1,12 @@
 import getCreepRole from '../roles/common/get-creep-role';
-import RolesVisualsConfig from './roles-visuals-config.interface';
+import Logger from '../utils/logger';
+
+interface RolesVisualsConfig {
+    [role: string]: {
+        icon: string;
+        path: PolyStyle;
+    };
+}
 
 const creepDefaultPathStyle: PolyStyle = {
     strokeWidth: 0.15,
@@ -84,7 +91,10 @@ export function getCreepIcon(creep: Creep): string {
     return getRoleIcon(getCreepRole(creep));
 }
 
-export function getCreepPathStyle(creep: Creep): PolyStyle {
+export function getCreepPathStyle(creep: Creep): PolyStyle | undefined {
+    if (!isVisualEnabled(VISUAL_TOGGLES_KEYS.CREEP_PATHS)) {
+        return undefined;
+    }
     return getRolePathStyle(getCreepRole(creep));
 }
 
@@ -93,3 +103,32 @@ export function getTextStyle(): TextStyle {
 }
 
 export const ROLE_FONT_SIZE: number = 0.5;
+
+export function isVisualEnabled(visualKey: string): boolean {
+    const toggleValue: boolean | undefined = Memory.visualsToggles[visualKey];
+    if (toggleValue === undefined) {
+        Logger.warning(`There's no "${visualKey}" visual toggle key. ` +
+            `Available visual toggle key: ${Object.keys(VISUAL_TOGGLES_KEYS)}`);
+    }
+    return !!toggleValue;
+}
+
+export function updateVisualsToggles(): void {
+    if (Memory.visualsToggles === undefined) {
+        Memory.visualsToggles = {};
+    }
+
+    Object.values(VISUAL_TOGGLES_KEYS).forEach((visualToggleKey) => {
+        if (Memory.visualsToggles[visualToggleKey] === undefined) {
+            Memory.visualsToggles[visualToggleKey] = false;
+        }
+    });
+}
+
+export const VISUAL_TOGGLES_KEYS = {
+    ROLE_ICONS: 'roleIcons',
+    CREEP_PATHS: 'creepPaths',
+    RCL_STATS: 'rlcStats',
+    TOWERS: 'towers',
+    SQUADS: 'squads',
+};
