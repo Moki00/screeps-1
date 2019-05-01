@@ -43,7 +43,8 @@ function findBuildTarget(room: Room): ConstructionSite | undefined {
         return anotherRoomFirstSpawnSite;
     }
 
-    const constructionSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES);
+    const constructionSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES)
+        .sort(sortConstructionsByExtensionsFirst);
     return constructionSites.find(() => true);
 }
 
@@ -62,4 +63,8 @@ function getAnotherRoomFirstSpawnConstructionSite(room: Room): ConstructionSite 
     );
     return anotherRoomFirstSpawnPosition.lookFor(LOOK_CONSTRUCTION_SITES)
         .find((constructionSite) => constructionSite.structureType === STRUCTURE_SPAWN);
+}
+
+function sortConstructionsByExtensionsFirst(constructionA: ConstructionSite) {
+    return (constructionA.structureType === STRUCTURE_EXTENSION) ? -1 : 1;
 }
