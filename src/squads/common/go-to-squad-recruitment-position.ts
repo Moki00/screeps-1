@@ -40,12 +40,12 @@ export function goToSquadRecruitmentPosition(creep: Creep, options: GoToSquadLin
 }
 
 function assignCreepToSquadSeat(creep: Creep, squad: SquadMemory): void {
-    const assignedSeatIndex: number | undefined = squad.seats
+    const assignedSeatIndex: number = squad.seats
         .findIndex((seat) => {
             return !seat.assignedCreepId && seat.role === creep.memory.role;
         });
 
-    if (assignedSeatIndex === undefined) {
+    if (assignedSeatIndex === -1) {
         return;
     }
 
