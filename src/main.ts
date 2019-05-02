@@ -15,6 +15,8 @@ import runHarvesterRole from './roles/harvester/run-harvester-role';
 import runHooverRole from './roles/hoover/run-hoover-role';
 import runLooterRole from './roles/looter/run-looter-role';
 import runRefillerRole from './roles/refiller/run-refiller-role';
+import {updateRoomsToScout} from './roles/scout/rooms-to-scout';
+import runScoutRole from './roles/scout/run-scout-role';
 import runSettlerRole from './roles/settler/run-settler-role';
 import runTransporterRole from './roles/transporter/run-transporter-role';
 import runUpgraderRole from './roles/upgrader/run-upgrader-role';
@@ -50,6 +52,8 @@ const tick: () => void = () => {
     updateComboSquads();
 
     getMyClaimedRooms().forEach((room) => {
+        updateRoomsToScout(room);
+
         removeHostileStructuresAndConstructionSites(room);
 
         const firstSpawn: StructureSpawn | undefined = room.find(FIND_MY_SPAWNS).find(() => true);
@@ -121,6 +125,9 @@ function runRoles(): void {
                 break;
             case 'settler':
                 runSettlerRole(creep);
+                break;
+            case 'scout':
+                runScoutRole(creep);
                 break;
         }
 

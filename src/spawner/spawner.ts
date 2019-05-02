@@ -8,6 +8,7 @@ import {
 } from '../constructions/upgrade-base';
 import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-sum-of-resourcer-to-clean';
 import {isLootFlagSet} from '../roles/looter/run-looter-role';
+import {getRoomsToScout} from '../roles/scout/rooms-to-scout';
 import {SETTLER_FLAG_NAME} from '../roles/settler/run-settler-role';
 import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
 import isRoleNeededByAnySquad from '../squads/common/is-role-needed-by-any-squad';
@@ -66,6 +67,10 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedRefiller(spawn.room)) {
         spawnRefillerCreep(spawn);
+    }
+
+    if (doINeedScout(spawn.room)) {
+        spawnScoutCreep(spawn);
     }
 }
 
@@ -348,6 +353,17 @@ function spawnComboSquadAttacker(spawn: StructureSpawn): void {
     );
 }
 
+function spawnScoutCreep(spawn: StructureSpawn): void {
+    const name = `Scout-${Game.time}`;
+
+    spawn.spawnCreep([MOVE], name, {
+        memory: {
+            originRoom: spawn.room.name,
+            role: 'scout',
+        },
+    });
+}
+
 function doINeedSettler(room: Room): boolean {
     const settleFlag: Flag | undefined = Game.flags[SETTLER_FLAG_NAME];
     const minimalClaimerSpawnCost: number = getBodyPartsCost([CLAIM, MOVE]);
@@ -461,6 +477,21 @@ function doINeedHoover(room: Room): boolean {
 
 function doINeedLooter(room: Room): boolean {
     return isLootFlagSet() && room.energyAvailable === room.energyCapacityAvailable;
+}
+
+function doINeedScout(room: Room): boolean {
+    if (getRoomsToScout(room).length === 0) {
+        return false;
+    }
+
+    const scoutCount: number = Object.values(Game.creeps)
+        .filter((creep) => creep.memory.originRoom === room.name && creep.memory.role === 'scout').length;
+
+    if (scoutCount > 0) {
+        return false;
+    }
+
+    return true;
 }
 
 const MIN_HOOVERS_CAPACITY_TO_DROPPED_RESOURCES_RATIO: number = 0.75;

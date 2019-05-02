@@ -27,6 +27,7 @@ declare global {
         transportToObjectId?: string;
         transportResourcesProgram?: string;
         buildTargetObjectId?: string;
+        scoutRoomTarget?: string;
     }
 
     interface RoomMemory {
@@ -34,6 +35,8 @@ declare global {
         controller: RoomControllerMemory;
         spawnQueue: string[];
         anotherRoomsHelp: AnotherRoomSettleHelp;
+        lastScoutUpdateTick?: number;
+        roomsToScout: string[];
     }
 
     interface AnotherRoomSettleHelp {
