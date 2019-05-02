@@ -32,6 +32,7 @@ import errorMapper from './utils/error-mapper';
 import Logger from './utils/logger';
 import updateTickRateMeter from './utils/tick-rate-meter';
 import {updateVisualsToggles} from './visuals/config';
+import drawCreepInfo from './visuals/draw-creep-info';
 import {scanAndDrawRoleIcons} from './visuals/draw-creep-role-icon';
 import drawSquadsVisual from './visuals/draw-squads';
 
@@ -122,6 +123,8 @@ function runRoles(): void {
                 runSettlerRole(creep);
                 break;
         }
+
+        drawCreepInfo(creep);
     }
 }
 

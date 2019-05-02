@@ -1,4 +1,5 @@
 import Logger from '../utils/logger';
+import drawHarvestBaseInfo from '../visuals/draw-harvest-base-info';
 import SourceMemory from './source-memory.interface';
 
 export default function updateHarvestBases(room: Room) {
@@ -10,6 +11,8 @@ export default function updateHarvestBases(room: Room) {
 
     checkIfHarvestersExist(room);
     checkIfTransportersExist(room);
+
+    drawHarvestBaseInfo(room);
 }
 
 export function getAnySourceIdWithoutHarvester(room: Room): string | undefined {
@@ -153,7 +156,6 @@ function initRoomSpawnsMemory(room: Room): void {
             harvesterCreepId: null,
             transporterCreepId: null,
             harvestingPosition: null,
-            towerPosition: null,
         };
     });
 }
@@ -180,8 +182,4 @@ function createHarvestingSpots(room: Room): void {
             };
         });
     }
-}
-
-function createGuardTowers(room: Room): void {
-    // TODO: build harvester guard towers
 }

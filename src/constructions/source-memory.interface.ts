@@ -5,5 +5,4 @@ export default interface SourceMemory {
     harvesterCreepId: string | null;
     transporterCreepId: string | null;
     harvestingPosition: SimpleRoomPosition | null;
-    towerPosition: SimpleRoomPosition | null;
 }

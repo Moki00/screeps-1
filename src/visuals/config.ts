@@ -131,4 +131,6 @@ export const VISUAL_TOGGLES_KEYS = {
     RCL_STATS: 'rlcStats',
     TOWERS: 'towers',
     SQUADS: 'squads',
+    SOURCES_MEMORY: 'sourcesMemory',
+    CREEPS_MEMORY: 'creepsMemory',
 };
