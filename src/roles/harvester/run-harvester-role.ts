@@ -1,44 +1,70 @@
 import {
-    getAnySourceIdWithoutHarvester, getHarvestingPositionBySourceId,
-    getSourceOfHarvester,
+    getHarvesterSourceMemory,
+    getSourceMemoriesWithLackingHarvesterByOriginRoom,
 } from '../../constructions/harvest-base';
+import SourceMemory from '../../constructions/source-memory.interface';
+import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
+import recycle from '../common/recycle';
 
 export default function runHarvesterRole(creep: Creep): void {
-    let source: Source | null = getSourceOfHarvester(creep);
-
-    if (!source) {
-        const anyFreeSourceId: string | undefined = getAnySourceIdWithoutHarvester(creep.room);
-        if (anyFreeSourceId) {
-            source = Game.getObjectById(anyFreeSourceId);
+    if (!creep.memory.targetSourceId) {
+        const newSourceMemoryToHarvest: SourceMemory | undefined =
+            getSourceMemoriesWithLackingHarvesterByOriginRoom(creep.memory.originRoom).find(() => true);
+        if (!newSourceMemoryToHarvest) {
+            Logger.warning(`There is no free source to harvest for ${creep}.`);
+            recycle(creep);
+            return;
         }
-    }
-
-    if (!source) {
+        creep.memory.targetSourceId = newSourceMemoryToHarvest.sourceId;
         return;
     }
 
-    const harvestingPosition: RoomPosition | null = source.id
-        ? getHarvestingPositionBySourceId(source.id) : null;
+    const targetSourceMemory: SourceMemory | undefined =
+        getHarvesterSourceMemory(creep.memory.targetSourceId, creep.memory.originRoom);
+    if (!targetSourceMemory) {
+        Logger.error(`Could not find ${creep} source memory.`);
+        return;
+    }
+
+    const isCreepInTargetRoom: boolean = creep.room.name === targetSourceMemory.harvestingPosition.room;
+
+    const harvestingPosition: RoomPosition = new RoomPosition(
+        targetSourceMemory.harvestingPosition.x,
+        targetSourceMemory.harvestingPosition.y,
+        targetSourceMemory.harvestingPosition.room!,
+    );
 
     if (!harvestingPosition) {
+        Logger.error(`${creep} can't find ${harvestingPosition}.`);
         return;
     }
 
     creep.moveTo(harvestingPosition, {
+        reusePath: 25,
         visualizePathStyle: getCreepPathStyle(creep),
     });
 
-    const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
-    switch (harvestReturnCode) {
-        case OK:
-        case ERR_NOT_ENOUGH_RESOURCES: {
-            maintainStructures(creep);
-            saveDroppedEnergy(creep);
-            break;
+    if (isCreepInTargetRoom) {
+        const sourceId: string = targetSourceMemory.sourceId;
+        const source: Source | null = Game.getObjectById(sourceId);
+
+        if (!source) {
+            Logger.warning(`${creep} can't find source.`);
+            return;
         }
-        case ERR_NOT_IN_RANGE: {
-            break;
+
+        const harvestReturnCode: ScreepsReturnCode = creep.harvest(source);
+        switch (harvestReturnCode) {
+            case OK:
+            case ERR_NOT_ENOUGH_RESOURCES: {
+                maintainStructures(creep);
+                saveDroppedEnergy(creep);
+                break;
+            }
+            case ERR_NOT_IN_RANGE: {
+                break;
+            }
         }
     }
 }

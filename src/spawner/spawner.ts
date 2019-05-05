@@ -1,4 +1,7 @@
-import {getAnySourceIdWithoutHarvester, getAnySourceIdWithoutTransporter} from '../constructions/harvest-base';
+import {
+    getSourceMemoriesWithLackingHarvesterByOriginRoom,
+    getSourceMemoriesWithLackingTransporterByOriginRoom,
+} from '../constructions/harvest-base';
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
 import {doesTerminalNeedTransporter} from '../constructions/terminal';
 import {
@@ -132,9 +135,8 @@ function spawnHarvesterCreep(spawn: StructureSpawn): void {
         name,
         {
         memory: {
-                originRoom: spawn.room.name,
+            originRoom: spawn.room.name,
             role: 'harvester',
-            targetSourceId: getAnySourceIdWithoutHarvester(spawn.room),
         },
     });
 }
@@ -397,7 +399,7 @@ function doINeedUpgrader(room: Room): boolean {
 }
 
 function doINeedHarvester(room: Room): boolean {
-    return !!getAnySourceIdWithoutHarvester(room);
+    return getSourceMemoriesWithLackingHarvesterByOriginRoom(room.name).length > 0;
 }
 
 function doINeedTransporter(room: Room): boolean {
@@ -406,7 +408,7 @@ function doINeedTransporter(room: Room): boolean {
     return (
         isThereAnyStorage &&
         (
-            !!getAnySourceIdWithoutTransporter(room) ||
+            getSourceMemoriesWithLackingTransporterByOriginRoom(room.name).length > 0 ||
             (!doesUpgradeTransporterExist(room) && doesUpgradersContainerExist(room)) ||
             !!(room.terminal && doesTerminalNeedTransporter(room.terminal))
         )

@@ -77,8 +77,8 @@ export function removeHostileStructuresAndConstructionSites(room: Room): void {
         .forEach((hostileConstructionSite) => hostileConstructionSite.remove());
 }
 
-export function isRoomMine(room: Room): boolean {
-    return !!(room.controller && room.controller.my);
+export function isRoomMine(room: Room | undefined): boolean {
+    return !!(room && room.controller && room.controller.my);
 }
 
 function detectAndCreateFirstSpawnsHelpMemory(): void {

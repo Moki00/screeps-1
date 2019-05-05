@@ -37,6 +37,7 @@ declare global {
         anotherRoomsHelp: AnotherRoomSettleHelp;
         lastScoutUpdateTick?: number;
         roomsToScout: string[];
+        remoteRooms: string[];
     }
 
     interface AnotherRoomSettleHelp {

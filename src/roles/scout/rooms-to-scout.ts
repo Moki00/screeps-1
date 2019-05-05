@@ -1,14 +1,15 @@
+import getExitRoomsNames from '../../utils/get-exit-rooms-names';
+
 export function updateRoomsToScout(room: Room): void {
-    room.memory.roomsToScout = findAdjacentRoomsNamesToScout(room);
+    room.memory.roomsToScout = findRoomsNamesToScout(room);
 }
 
 export function getRoomsToScout(room: Room): string[] {
     return room.memory.roomsToScout || [];
 }
 
-function findAdjacentRoomsNamesToScout(room: Room): string[] {
-    const exits: ExitsInformation = Game.map.describeExits(room.name);
-    return Object.values(exits)
+function findRoomsNamesToScout(room: Room): string[] {
+    return Object.values(getExitRoomsNames(room.name))
         .filter((roomName) => doesRoomNeedToBeScouted(roomName!)) as string[];
 }
 
@@ -31,4 +32,4 @@ function isScoutDataExpired(scoutUpdateTime: number): boolean {
     return Game.time - scoutUpdateTime > SCOUT_ROOM_EXPIRATION_TIME;
 }
 
-const SCOUT_ROOM_EXPIRATION_TIME: number = 5000;
+const SCOUT_ROOM_EXPIRATION_TIME: number = 500;

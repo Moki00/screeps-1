@@ -1,16 +1,21 @@
-import {getAnySourceIdWithoutTransporter, getHarvestContainerBySourceId} from '../../constructions/harvest-base';
+import {
+    getHarvestContainerBySourceId,
+    getSourceMemoriesWithLackingTransporterByOriginRoom,
+} from '../../constructions/harvest-base';
+import SourceMemory from '../../constructions/source-memory.interface';
 import {getRoomEarlyStorageContainer} from '../../constructions/storage';
 import {doesTerminalNeedTransporter} from '../../constructions/terminal';
 import {getTransporterByControllerId, getUpgraderContainer} from '../../constructions/upgrade-base';
 import TRANSPORT_NEEDED_RESOURCES_PROGRAM from './transport-needed-resources-program';
 
 export default function assignTransportTargets(creep: Creep): void {
-    const sourceIdWithoutTransporter: string | null = getAnySourceIdWithoutTransporter(creep.room);
+    const sourceMemoryWithLackingTransporter: SourceMemory | undefined =
+        getSourceMemoriesWithLackingTransporterByOriginRoom(creep.memory.originRoom).find(() => true);
     const storageContainer: StructureStorage | StructureContainer | undefined = getTargetStorage(creep.room);
 
-    if (sourceIdWithoutTransporter) {
+    if (sourceMemoryWithLackingTransporter) {
         const harvesterContainer: StructureContainer | null =
-            getHarvestContainerBySourceId(sourceIdWithoutTransporter);
+            getHarvestContainerBySourceId(sourceMemoryWithLackingTransporter.sourceId);
 
         if (harvesterContainer && storageContainer) {
             creep.memory.transportFromObjectId = harvesterContainer.id;

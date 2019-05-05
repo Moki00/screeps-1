@@ -1,48 +1,81 @@
+import getExitRoomsNames from '../utils/get-exit-rooms-names';
 import Logger from '../utils/logger';
+import simplyfyRoomPosition from '../utils/simplify-room-position';
 import drawHarvestBaseInfo from '../visuals/draw-harvest-base-info';
+import {isRoomMine} from './rooms';
 import SourceMemory from './source-memory.interface';
 
-export default function updateHarvestBases(room: Room) {
-    if (!room.memory.sources) {
-        initRoomSpawnsMemory(room);
-    }
+export default function updateHarvestBases(originRoom: Room) {
+    const remoteRooms: string[] = findRemoteHarvestableRoomsNames(originRoom);
+    [originRoom.name, ...remoteRooms].forEach((roomName) => {
+        const room: Room | undefined = Game.rooms[roomName];
 
-    createHarvestingSpots(room);
+        if (room) {
+            if (!room.memory.sources) {
+                initRoomSourcesMemory(room, originRoom);
+            }
 
-    checkIfHarvestersExist(room);
-    checkIfTransportersExist(room);
+            createHarvestingConstructionSites(room, originRoom);
+        }
 
-    drawHarvestBaseInfo(room);
+        checkIfContainerExists(roomName);
+        checkIfHarvestersExist(roomName);
+        checkIfTransportersExist(roomName);
+
+        drawHarvestBaseInfo(roomName);
+    });
 }
 
-export function getAnySourceIdWithoutHarvester(room: Room): string | undefined {
-    if (!room.memory.sources) {
-        return undefined;
-    }
-
-    const sourceMemoryWithoutHarvester: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
-        .find((sourceMemory) => !sourceMemory.harvesterCreepId);
-
-    if (sourceMemoryWithoutHarvester) {
-        return sourceMemoryWithoutHarvester.sourceId;
-    }
-
-    return undefined;
+export function getHarvesterSourceMemory(sourceId: string, originRoomName: string): SourceMemory | undefined {
+    const roomNames: string[] = [originRoomName, ...getRemoteRoomsNames(originRoomName)];
+    return getSourceMemoriesByRoomNames(roomNames)
+        .find((sourceMemory) => sourceMemory.sourceId === sourceId);
 }
 
-export function getAnySourceIdWithoutTransporter(room: Room): string | null {
-    if (!room.memory.sources) {
-        return null;
-    }
+export function getSourceMemoriesByRoomNames(roomNames: string[]): SourceMemory[] {
+    return roomNames
+        .filter((roomName) => !!Memory.rooms[roomName] && !!Memory.rooms[roomName].sources)
+        .reduce<SourceMemory[]>((acc, roomName) => {
+            const thisRoomSourceIdsWithoutHarvesters: SourceMemory[] =
+                Object.values<SourceMemory>(Memory.rooms[roomName].sources);
 
-    const sourceMemoryWithoutTransporter: SourceMemory | undefined = Object.values<SourceMemory>(room.memory.sources)
-        .find((sourceMemory) => !sourceMemory.transporterCreepId);
+            return [...acc, ...thisRoomSourceIdsWithoutHarvesters];
+        }, []);
+}
 
-    if (sourceMemoryWithoutTransporter) {
-        return sourceMemoryWithoutTransporter.sourceId;
-    }
+export function getAllSourceMemories(): SourceMemory[] {
+    const allMemoryRooms: string[] = Object.keys(Memory.rooms);
+    return getSourceMemoriesByRoomNames(allMemoryRooms);
+}
 
-    return null;
+export function getSourceMemoryBySourceId(sourceId: string): SourceMemory | undefined {
+    return getAllSourceMemories()
+        .find((sourceMemory) => sourceMemory.sourceId === sourceId);
+}
+
+export function getSourceMemoriesByOriginRoom(originRoomName: string): SourceMemory[] {
+    const roomNames: string[] = [originRoomName, ...getRemoteRoomsNames(originRoomName)];
+    return getSourceMemoriesByRoomNames(roomNames);
+}
+
+export function getSourceMemoriesWithLackingHarvester(roomNames: string[]): SourceMemory[] {
+    return getSourceMemoriesByRoomNames(roomNames)
+        .filter((sourceMemory) => !sourceMemory.harvesterCreepId);
+}
+
+export function getSourceMemoriesWithLackingHarvesterByOriginRoom(originRoomName: string): SourceMemory[] {
+    const roomsWithSources: string[] = [originRoomName, ...getRemoteRoomsNames(originRoomName)];
+    return getSourceMemoriesWithLackingHarvester(roomsWithSources);
+}
+
+export function getSourceMemoriesWithLackingTransporter(roomNames: string[]): SourceMemory[] {
+    return getSourceMemoriesByRoomNames(roomNames)
+        .filter((sourceMemory) => !sourceMemory.transporterCreepId);
+}
+
+export function getSourceMemoriesWithLackingTransporterByOriginRoom(originRoomName: string): SourceMemory[] {
+    const roomsWithSources: string[] = [originRoomName, ...getRemoteRoomsNames(originRoomName)];
+    return getSourceMemoriesWithLackingTransporter(roomsWithSources);
 }
 
 export function getHarvestingPositionBySourceId(sourceId: string): RoomPosition | null {
@@ -63,10 +96,6 @@ export function getHarvestingPositionBySourceId(sourceId: string): RoomPosition 
 
     const { x, y } = source.room.memory.sources[sourceId].harvestingPosition as {x: number, y: number};
     return new RoomPosition(x, y, source.room.name);
-}
-
-export function getSourceOfHarvester(creep: Creep): Source | null {
-    return Game.getObjectById(creep.memory.targetSourceId);
 }
 
 export function getHarvestContainerBySourceId(sourceId: string): StructureContainer | null {
@@ -94,92 +123,145 @@ export function getHarvestContainerBySourceId(sourceId: string): StructureContai
 }
 
 function getHarvesterBySourceId(sourceId: string): Creep | undefined {
-    const source: Source | null = Game.getObjectById(sourceId);
-    const room: Room | undefined = source ? source.room : undefined;
-    if (!room) {
-        return undefined;
-    }
-
-    return room.find(FIND_MY_CREEPS)
-        .filter((creep) => creep.memory.role === 'harvester')
+    return Object.values(Game.creeps)
         .find((creep) => creep.memory.targetSourceId === sourceId);
 }
 
 function getTransporterBySourceId(sourceId: string): Creep | undefined {
-    const source: Source | null = Game.getObjectById(sourceId);
-    if (!source) {
-        return undefined;
+    const sourceMemory: SourceMemory | undefined = getSourceMemoryBySourceId(sourceId);
+    if (!sourceMemory) {
+        Logger.error(`Can't find source memory by id "${sourceId}".`);
+        return;
     }
-
-    const container: StructureContainer | null = getHarvestContainerBySourceId(sourceId);
-    if (!container) {
-        return undefined;
-    }
-
-    return source.room.find(FIND_MY_CREEPS)
-        .filter((creep) => creep.memory.role === 'transporter')
-        .find((creep) => creep.memory.transportFromObjectId === container.id);
+    return Object.values(Game.creeps)
+        .find((creep) => creep.memory.transportFromObjectId === sourceMemory.containerId);
 }
 
-function checkIfHarvestersExist(room: Room): void {
-    Object.values<SourceMemory>(room.memory.sources)
+function checkIfContainerExists(roomName: string): void {
+    getSourceMemoriesByRoomNames([roomName])
+        .forEach((sourceMemory) => {
+            const harvestContainer: StructureContainer | null = getHarvestContainerBySourceId(sourceMemory.sourceId);
+            Memory.rooms[roomName].sources[sourceMemory.sourceId].containerId =
+                harvestContainer ? harvestContainer.id : null;
+        });
+}
+
+function checkIfHarvestersExist(roomName: string): void {
+    getSourceMemoriesByRoomNames([roomName])
         .forEach((sourceMemory) => {
             const creep: Creep | undefined = getHarvesterBySourceId(sourceMemory.sourceId);
-            if (creep) {
-                sourceMemory.harvesterCreepId = creep.id;
-            } else {
-                sourceMemory.harvesterCreepId = null;
-            }
+            Memory.rooms[roomName].sources[sourceMemory.sourceId].harvesterCreepId = creep ? creep.id : null;
         });
 }
 
-function checkIfTransportersExist(room: Room): void {
-    Object.values<SourceMemory>(room.memory.sources)
+function checkIfTransportersExist(roomName: string): void {
+    getSourceMemoriesByRoomNames([roomName])
         .forEach((sourceMemory) => {
             const creep: Creep | undefined = getTransporterBySourceId(sourceMemory.sourceId);
-            if (creep) {
-                sourceMemory.transporterCreepId = creep.id;
-            } else {
-                sourceMemory.transporterCreepId = null;
-            }
+            Memory.rooms[roomName].sources[sourceMemory.sourceId].transporterCreepId = creep ? creep.id : null;
         });
 }
 
-function initRoomSpawnsMemory(room: Room): void {
+export function initRoomSourcesMemory(room: Room, originRoom: Room): void {
     const sources: Source[] = room.find(FIND_SOURCES);
 
     room.memory.sources = {};
 
     sources.forEach((source) => {
+        const harvestingPosition: RoomPosition | undefined = findHarvestingPosition(source, originRoom);
+        if (!harvestingPosition) {
+            return;
+        }
+
         room.memory.sources[source.id] = {
             sourceId: source.id,
             harvesterCreepId: null,
+            containerId: null,
             transporterCreepId: null,
-            harvestingPosition: null,
+            harvestingPosition: simplyfyRoomPosition(harvestingPosition),
         };
     });
 }
 
-function createHarvestingSpots(room: Room): void {
-    const spawns: StructureSpawn[] = room.find(FIND_MY_SPAWNS);
+function findHarvestingPosition(source: Source, originRoom: Room): RoomPosition | undefined {
+    const anySpawn: StructureSpawn | undefined = originRoom.find(FIND_MY_SPAWNS).find(() => true);
+    if (!anySpawn) {
+        Logger.error(`Can't find harvesting position. Can't find path from ${source} to ${originRoom}.`);
+        return;
+    }
+
+    const pathSteps: PathStep[] = source.room
+        .findPath(
+            source.pos,
+            anySpawn.pos,
+            {
+                ignoreCreeps: true,
+                ignoreDestructibleStructures: true,
+                ignoreRoads: true,
+            },
+        );
+
+    if (!pathSteps.length) {
+        Logger.error(`Can't find harvesting position. Can't find path from ${source} to ${originRoom}.`);
+        return;
+    }
+
+    return new RoomPosition(
+        pathSteps[0].x,
+        pathSteps[0].y,
+        source.room.name,
+    );
+}
+
+function createHarvestingConstructionSites(room: Room, originRoom: Room): void {
+    const spawn: StructureSpawn | undefined = originRoom.find(FIND_MY_SPAWNS).find(() => true);
     const sources: Source[] = room.find(FIND_SOURCES);
 
-    if (spawns && sources) {
-        const spawn: StructureSpawn = spawns[0];
-        sources.forEach((source) => {
-            const pathSteps: PathStep[] = room
-                .findPath(source.pos, spawn.pos, {
-                    ignoreCreeps: true,
-                    ignoreDestructibleStructures: true,
-                    ignoreRoads: true,
-                });
-
-            room.createConstructionSite(pathSteps[0].x, pathSteps[0].y, STRUCTURE_CONTAINER);
-            room.createConstructionSite(pathSteps[0].x, pathSteps[0].y, STRUCTURE_RAMPART);
-            room.memory.sources[source.id].harvestingPosition = {
-                x: pathSteps[0].x,
-                y: pathSteps[0].y,
-            };
-        });
+    if (!spawn || !sources) {
+        return;
     }
+
+    sources.forEach((source) => {
+        const harvestingPosition: RoomPosition | undefined = findHarvestingPosition(source, originRoom);
+        if (!harvestingPosition) {
+            return;
+        }
+
+        room.createConstructionSite(harvestingPosition, STRUCTURE_CONTAINER);
+        room.createConstructionSite(harvestingPosition, STRUCTURE_RAMPART);
+
+        room.memory.sources[source.id].harvestingPosition = simplyfyRoomPosition(harvestingPosition);
+    });
+}
+
+function findCloseRemoteRoomsNames(room: Room): string[] {
+    return getExitRoomsNames(room.name)
+        .filter((roomName) => Object.keys(Memory.rooms).includes(roomName));
+}
+
+function findRemoteHarvestableRoomsNames(room: Room): string[] {
+    const remoteRooms: string[] = findCloseRemoteRoomsNames(room)
+        .filter((roomName) => {
+            const hasRoomOnlyOneSource: boolean = getRoomSourcesCount(roomName) === 1;
+            return (
+                hasRoomOnlyOneSource &&
+                !isRoomMine(Game.rooms[roomName])
+            );
+        });
+
+    Memory.rooms[room.name].remoteRooms = remoteRooms;
+
+    return remoteRooms;
+}
+
+export function getRemoteRoomsNames(originRoom: string): string[] {
+    return Memory.rooms[originRoom].remoteRooms;
+}
+
+function getRoomSourcesCount(roomName: string): number | undefined {
+    if (!Memory.rooms[roomName].sources) {
+        return;
+    }
+
+    return Object.keys(Memory.rooms[roomName].sources).length;
 }

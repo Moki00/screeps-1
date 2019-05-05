@@ -1,3 +1,4 @@
+import {initRoomSourcesMemory} from '../../constructions/harvest-base';
 import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 import recycle from '../common/recycle';
@@ -24,29 +25,20 @@ export default function runScoutRole(creep: Creep): void {
 }
 
 function reportRoom(creep: Creep): void {
-    reportRoomSources(creep.room.name);
+    const roomToReport: Room = creep.room;
+    const originRoom: Room | undefined = Game.rooms[creep.memory.originRoom];
+    if (!originRoom) {
+        Logger.error(`${creep} cannot access origin room "${creep.memory.originRoom}" to report ${roomToReport}.`);
+        return;
+    }
+    reportRoomSources(roomToReport, originRoom);
 
     creep.room.memory.lastScoutUpdateTick = Game.time;
     creep.memory.scoutRoomTarget = undefined;
 }
 
-function reportRoomSources(roomName: string): void {
-    const room: Room | undefined = Game.rooms[roomName];
-    if (!room) {
-        Logger.error(`Can't report "${roomName}" room.`);
-        return;
-    }
-
-    const sources: Source[] = room.find(FIND_SOURCES);
-
-    sources.forEach((source) => {
-        room.memory.sources[source.id] = {
-            sourceId: source.id,
-            harvesterCreepId: null,
-            transporterCreepId: null,
-            harvestingPosition: null,
-        };
-    });
+function reportRoomSources(room: Room, originRoom: Room): void {
+    initRoomSourcesMemory(room, originRoom);
 }
 
 function moveToRoom(creep: Creep, targetRoomName: string): void {
