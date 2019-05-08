@@ -25,7 +25,7 @@ export default function assignTransportTargets(creep: Creep): void {
         }
     }
 
-    const upgraderContainer: StructureContainer | null = getUpgraderContainer(creep.room);
+    const upgraderContainer: StructureContainer | undefined = getUpgraderContainer(creep.room);
     const doesUpgraderTransporterExist: boolean = !!(
         creep.room.controller &&
         !!getTransporterByControllerId(creep.room.controller.id)

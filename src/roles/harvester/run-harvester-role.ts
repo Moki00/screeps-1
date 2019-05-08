@@ -2,6 +2,7 @@ import {
     getHarvesterSourceMemory,
     getSourceMemoriesWithLackingHarvesterByOriginRoom,
 } from '../../constructions/harvest-base';
+import {doesRampartRequireRepair} from '../../constructions/rampart';
 import SourceMemory from '../../constructions/source-memory.interface';
 import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
@@ -106,8 +107,7 @@ function repairHarvestersRampart(creep: Creep): void {
         return;
     }
 
-    const desiredHits: number = rampart.hitsMax / 100;
-    if (rampart.hits < desiredHits) {
+    if (doesRampartRequireRepair(rampart)) {
         creep.repair(rampart);
     }
 }

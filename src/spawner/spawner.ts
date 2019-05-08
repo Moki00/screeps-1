@@ -382,7 +382,7 @@ function doINeedUpgrader(room: Room): boolean {
     let upgradersNeeded = 1;
 
     if (!room.storage) {
-        const upgradeContainer: StructureContainer | null = getUpgraderContainer(room);
+        const upgradeContainer: StructureContainer | undefined = getUpgraderContainer(room);
         if (upgradeContainer && upgradeContainer.store.energy > upgradeContainer.storeCapacity * 0.9) {
             upgradersNeeded = upgradersCount + 1;
         }

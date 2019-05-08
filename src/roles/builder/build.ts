@@ -17,7 +17,7 @@ export default function build(creep: Creep): void {
 
     if (!buildTarget) {
         Logger.warning(
-            `"${creep.name}" creep's build target doesn't exists. Was it destroyed or completed in the meantime?`);
+            `"${creep}" creep's build target doesn't exists. Was it destroyed or completed in the meantime?`);
         creep.memory.buildTargetObjectId = undefined;
         creep.memory.state = BuilderRoleState.REPAIR;
         return;

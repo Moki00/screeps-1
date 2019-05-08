@@ -12,7 +12,7 @@ export default function harvest(creep: Creep): void {
         });
     }
 
-    const upgradeContainer: StructureContainer | null = getUpgraderContainer(creep.room);
+    const upgradeContainer: StructureContainer | undefined = getUpgraderContainer(creep.room);
 
     const hasUpgradeContainerEnoughEnergy: boolean =
         !!upgradeContainer && (upgradeContainer.store.energy > (upgradeContainer.storeCapacity * 0.1));

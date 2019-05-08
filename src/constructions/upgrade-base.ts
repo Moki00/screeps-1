@@ -1,4 +1,5 @@
 import Logger from '../utils/logger';
+import simplyfyRoomPosition from '../utils/simplify-room-position';
 import drawRclStats from '../visuals/draw-rcl-stats';
 
 export default function updateUpgradeBase(room: Room): void {
@@ -14,6 +15,9 @@ export default function updateUpgradeBase(room: Room): void {
 
     createUpgradingSpot(room);
     checkIfTransporterExist(room);
+    if (room.storage) {
+        createAntiDowngradeRampartsAround(room.controller);
+    }
 
     drawRclStats(room);
 
@@ -37,18 +41,18 @@ export function getUpgradingPosition(room: Room): RoomPosition | null {
     );
 }
 
-export function getUpgraderContainer(room: Room): StructureContainer | null {
+export function getUpgraderContainer(room: Room): StructureContainer | undefined {
     const upgradingPosition: RoomPosition | null = getUpgradingPosition(room);
 
     if (!upgradingPosition) {
-        return null;
+        return;
     }
 
     const container: StructureContainer | undefined = upgradingPosition.lookFor(LOOK_STRUCTURES)
         .find((structure) => structure.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
 
     if (!container) {
-        return null;
+        return;
     }
 
     return container;
@@ -84,7 +88,7 @@ export function getTransporterByControllerId(controllerId: string): Creep | unde
         return undefined;
     }
 
-    const upgraderContainer: StructureContainer | null = getUpgraderContainer(controller.room);
+    const upgraderContainer: StructureContainer | undefined = getUpgraderContainer(controller.room);
     if (!upgraderContainer) {
         return undefined;
     }
@@ -112,23 +116,52 @@ function checkIfTransporterExist(room: Room): void {
 }
 
 function createUpgradingSpot(room: Room): void {
-    const spawns: StructureSpawn[] = room.find(FIND_MY_SPAWNS);
+    const upgradingPosition: RoomPosition | undefined = findUpgradingPosition(room);
+
+    if (!upgradingPosition) {
+        Logger.error(`Could not find upgrading position in ${room}.`);
+        return;
+    }
+
+    room.createConstructionSite(upgradingPosition, STRUCTURE_CONTAINER);
+    room.memory.controller.upgradingPosition = simplyfyRoomPosition(upgradingPosition);
+}
+
+function findUpgradingPosition(room: Room): RoomPosition | undefined {
+    const spawn: StructureSpawn | undefined = room.find(FIND_MY_SPAWNS).find(() => true);
     const controller: StructureController | undefined = room.controller;
 
-    if (spawns && controller) {
-        const spawn: StructureSpawn = spawns[0];
-        const pathSteps: PathStep[] = room
-            .findPath(controller.pos, spawn.pos, {
-                ignoreCreeps: true,
-                ignoreDestructibleStructures: true,
-                ignoreRoads: true,
-            });
+    if (!spawn || !controller) {
+        return;
+    }
 
-        room.createConstructionSite(pathSteps[0].x, pathSteps[0].y, STRUCTURE_CONTAINER);
-        room.memory.controller.upgradingPosition = {
-            x: pathSteps[0].x,
-            y: pathSteps[0].y,
-        };
+    const pathSteps: PathStep[] = room
+        .findPath(controller.pos, spawn.pos, {
+            ignoreCreeps: true,
+            ignoreDestructibleStructures: true,
+            ignoreRoads: true,
+        });
+
+    return new RoomPosition(
+        pathSteps[0].x,
+        pathSteps[0].y,
+        room.name,
+    );
+}
+
+function createAntiDowngradeRampartsAround(controller: StructureController): void {
+    for (let offsetX = -1; offsetX <= 1; offsetX++) {
+        for (let offsetY = -1; offsetY <= 1; offsetY++) {
+            if (offsetX === 0 && offsetY === 0) {
+                continue;
+            }
+
+            controller.room.createConstructionSite(
+                controller.pos.x + offsetX,
+                controller.pos.y + offsetY,
+                STRUCTURE_RAMPART,
+            );
+        }
     }
 }
 

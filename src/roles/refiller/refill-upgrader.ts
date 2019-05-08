@@ -10,7 +10,7 @@ export default function refillUpgrader(creep: Creep): void {
         return;
     }
 
-    const container: StructureContainer | null = getUpgraderContainer(creep.room);
+    const container: StructureContainer | undefined = getUpgraderContainer(creep.room);
 
     if (!container) {
         creep.memory.state = RefillerRoleState.BUILD;

@@ -27,6 +27,7 @@ declare global {
         transportToObjectId?: string;
         transportResourcesProgram?: string;
         buildTargetObjectId?: string;
+        repairTargetObjectId?: string;
         scoutRoomTarget?: string;
     }
 
