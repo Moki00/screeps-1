@@ -22,6 +22,8 @@ import getBodyPartsCost from './helpers/get-body-parts-cost';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
+    spawn.room.createConstructionSite(spawn.pos, STRUCTURE_RAMPART);
+
     if (spawn.room.energyAvailable < SPAWN_ENERGY_CAPACITY || spawn.spawning) {
         return;
     }

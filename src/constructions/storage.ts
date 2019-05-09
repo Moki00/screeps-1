@@ -12,11 +12,18 @@ export default function createStoragesConstructionSites(room: Room): void {
 }
 
 function createStorageConstructionSite(spawn: StructureSpawn): void {
-    spawn.room.createConstructionSite(
+    const isStorageAvailable: boolean = CONTROLLER_STRUCTURES[STRUCTURE_STORAGE][spawn.room.controller!.level] > 0;
+    if (!isStorageAvailable) {
+        return;
+    }
+
+    const roomPosition: RoomPosition = new RoomPosition(
         spawn.pos.x,
         spawn.pos.y + 1,
-        STRUCTURE_STORAGE,
+        spawn.room.name,
     );
+    spawn.room.createConstructionSite(roomPosition, STRUCTURE_STORAGE);
+    spawn.room.createConstructionSite(roomPosition, STRUCTURE_RAMPART);
 }
 
 function createEarlyStorageContainerConstructionSite(spawn: StructureSpawn): void {

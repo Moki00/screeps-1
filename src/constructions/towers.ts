@@ -18,11 +18,15 @@ export default function createTowersContructionSites(spawn: StructureSpawn): voi
             y: -1,
         },
     ];
-    relativePositions.forEach((relativePosition) => {
-        spawn.room.createConstructionSite(
+    relativePositions.forEach((relativePosition, towerIndex) => {
+        const roomPosition: RoomPosition = new RoomPosition(
             spawn.pos.x + relativePosition.x,
             spawn.pos.y + relativePosition.y,
-            STRUCTURE_TOWER,
+            spawn.room.name,
         );
+        spawn.room.createConstructionSite(roomPosition, STRUCTURE_TOWER);
+        if (towerIndex < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][spawn.room.controller!.level]) {
+            spawn.room.createConstructionSite(roomPosition, STRUCTURE_RAMPART);
+        }
     });
 }
