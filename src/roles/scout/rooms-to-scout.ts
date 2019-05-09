@@ -32,4 +32,4 @@ function isScoutDataExpired(scoutUpdateTime: number): boolean {
     return Game.time - scoutUpdateTime > SCOUT_ROOM_EXPIRATION_TIME;
 }
 
-const SCOUT_ROOM_EXPIRATION_TIME: number = 500;
+const SCOUT_ROOM_EXPIRATION_TIME: number = 2000;
