@@ -70,7 +70,7 @@ export function getSourceMemoriesWithLackingHarvesterByOriginRoom(originRoomName
 
 export function getSourceMemoriesWithLackingTransporter(roomNames: string[]): SourceMemory[] {
     return getSourceMemoriesByRoomNames(roomNames)
-        .filter((sourceMemory) => !sourceMemory.transporterCreepId);
+        .filter((sourceMemory) => sourceMemory.containerId && !sourceMemory.transporterCreepId);
 }
 
 export function getSourceMemoriesWithLackingTransporterByOriginRoom(originRoomName: string): SourceMemory[] {
