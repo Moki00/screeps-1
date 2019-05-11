@@ -1,26 +1,39 @@
 import drawTowerOptimalRangeVisual from './visuals/draw-tower-optimal-range';
 
 export default function runTower(tower: StructureTower): void {
-    const hasAttacked: boolean = attack(tower);
+    const hasAttacked: boolean = attack(tower) === OK;
 
     if (!hasAttacked) {
         heal(tower);
     }
 }
 
-function attack(tower: StructureTower): boolean {
+function attack(tower: StructureTower): ScreepsReturnCode | undefined {
     drawTowerOptimalRangeVisual(tower);
 
-    const closestHostile: Creep | undefined =
-        tower.pos.findInRange(FIND_HOSTILE_CREEPS, TOWER_OPTIMAL_RANGE).find(() => true);
+    const hostileCreep: Creep | undefined = findTargetCreep(tower);
 
-    if (!closestHostile) {
-        return false;
+    if (!hostileCreep) {
+        return;
     }
 
-    const attackReturnCode: ScreepsReturnCode = tower.attack(closestHostile);
+    const attackReturnCode: ScreepsReturnCode = tower.attack(hostileCreep);
 
-    return attackReturnCode === OK;
+    return attackReturnCode;
+}
+
+function findTargetCreep(tower: StructureTower): Creep | undefined {
+    return tower.room.find(FIND_HOSTILE_CREEPS)
+        .filter((hostileCreep) => {
+            const isInvader: boolean = hostileCreep.owner.username === 'invader';
+            if (isInvader) {
+                return true;
+            }
+
+            const isCloseEnough: boolean = hostileCreep.pos.inRangeTo(hostileCreep.pos, TOWER_OPTIMAL_RANGE);
+            return isCloseEnough;
+        })
+        .find(() => true);
 }
 
 function heal(tower: StructureTower): void {
