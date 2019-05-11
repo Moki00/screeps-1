@@ -37,6 +37,10 @@ export default function updateSpawner(spawn: StructureSpawn) {
         spawnLooterCreep(spawn);
     }
 
+    if (doINeedScout(spawn.room)) {
+        spawnScoutCreep(spawn);
+    }
+
     if (doINeedHoover(spawn.room)) {
         spawnHooverCreep(spawn);
     }
@@ -73,10 +77,6 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
     if (doINeedRefiller(spawn.room)) {
         spawnRefillerCreep(spawn);
-    }
-
-    if (doINeedScout(spawn.room)) {
-        spawnScoutCreep(spawn);
     }
 }
 
