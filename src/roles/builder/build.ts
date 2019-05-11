@@ -70,6 +70,11 @@ function getAnotherRoomFirstSpawnConstructionSite(room: Room): ConstructionSite 
         room.memory.anotherRoomsHelp.firstSpawnPosition.y,
         room.memory.anotherRoomsHelp.firstSpawnPosition.room!,
     );
+
+    if (!Game.rooms[room.memory.anotherRoomsHelp.firstSpawnPosition.room!]) {
+        return undefined;
+    }
+
     return anotherRoomFirstSpawnPosition.lookFor(LOOK_CONSTRUCTION_SITES)
         .find((constructionSite) => constructionSite.structureType === STRUCTURE_SPAWN);
 }

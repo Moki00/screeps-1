@@ -2,6 +2,7 @@ import {
     getSourceMemoriesWithLackingHarvesterByOriginRoom,
     getSourceMemoriesWithLackingTransporterByOriginRoom,
 } from '../constructions/harvest-base';
+import {isRoomMine} from '../constructions/rooms';
 import {getRoomEarlyStorageContainer} from '../constructions/storage';
 import {doesTerminalNeedTransporter} from '../constructions/terminal';
 import {
@@ -13,6 +14,7 @@ import getSumOfResourcesToClean, {ResourcesToClean} from '../roles/hoover/get-su
 import {isLootFlagSet} from '../roles/looter/run-looter-role';
 import {getRoomsToScout} from '../roles/scout/rooms-to-scout';
 import {SETTLER_FLAG_NAME} from '../roles/settler/run-settler-role';
+import SETTLER_BODY_PARTS from '../roles/settler/settler-body-parts';
 import getSquadWhichNeedsRole from '../squads/common/get-squad-which-needs-role';
 import isRoleNeededByAnySquad from '../squads/common/is-role-needed-by-any-squad';
 import getHitsToBuild from '../utils/get-hits-to-build';
@@ -45,16 +47,16 @@ export default function updateSpawner(spawn: StructureSpawn) {
         spawnHooverCreep(spawn);
     }
 
-    if (doINeedBuilder(spawn.room)) {
-        spawnBuilderCreep(spawn);
-    }
-
     if (doINeedDefender(spawn.room)) {
         spawnDefenderCreep(spawn);
     }
 
     if (doINeedUpgrader(spawn.room)) {
         spawnUpgraderCreep(spawn);
+    }
+
+    if (doINeedBuilder(spawn.room)) {
+        spawnBuilderCreep(spawn);
     }
 
     if (isRoleNeededByAnySquad('combo-squad-medic')) {
@@ -82,12 +84,9 @@ export default function updateSpawner(spawn: StructureSpawn) {
 
 function spawnSettlerCreep(spawn: StructureSpawn): void {
     const name = `Settler-${Game.time}`;
-    Logger.info(`Spawning ${name} creep,`);
 
     spawn.spawnCreep(
-        stripBodyParts(
-            [CLAIM, MOVE],
-        ),
+        stripBodyParts(SETTLER_BODY_PARTS),
         name,
         {
             memory: {
@@ -103,7 +102,20 @@ function spawnUpgraderCreep(spawn: StructureSpawn): void {
 
     spawn.spawnCreep(
         stripBodyParts(
-            [MOVE, WORK, WORK, MOVE, WORK, MOVE, WORK, WORK, WORK, MOVE, CARRY],
+            [
+                MOVE, WORK,
+                WORK, MOVE,
+                WORK, MOVE,
+                WORK, MOVE,
+                WORK, MOVE,
+                CARRY, MOVE,
+                WORK, MOVE,
+                WORK, MOVE,
+                CARRY, MOVE,
+                CARRY, MOVE,
+                WORK, MOVE,
+                CARRY, MOVE,
+            ],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
                 fatigue: {
@@ -371,9 +383,15 @@ function spawnScoutCreep(spawn: StructureSpawn): void {
 
 function doINeedSettler(room: Room): boolean {
     const settleFlag: Flag | undefined = Game.flags[SETTLER_FLAG_NAME];
-    const minimalClaimerSpawnCost: number = getBodyPartsCost([CLAIM, MOVE]);
+    const minimalClaimerSpawnCost: number = getBodyPartsCost(SETTLER_BODY_PARTS);
     const doesSettleExists: boolean = Object.values(Game.creeps).some((creep) => creep.memory.role === 'settler');
-    return !!settleFlag && room.energyCapacityAvailable > minimalClaimerSpawnCost && !doesSettleExists;
+    const isRoomAleadyMine: boolean = !!settleFlag && isRoomMine(Game.rooms[settleFlag.pos.roomName]);
+    return (
+        !!settleFlag &&
+        room.energyCapacityAvailable > minimalClaimerSpawnCost &&
+        !doesSettleExists &&
+        !isRoomAleadyMine
+    );
 }
 
 function doINeedUpgrader(room: Room): boolean {

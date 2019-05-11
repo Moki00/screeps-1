@@ -1,4 +1,5 @@
 import {getRoomEarlyStorageContainer} from '../../constructions/storage';
+import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 
 export default function recycle(creep: Creep): void {
@@ -7,6 +8,7 @@ export default function recycle(creep: Creep): void {
         .find((structure) => structure.structureType === STRUCTURE_SPAWN) as StructureSpawn | undefined;
 
     if (!spawn) {
+        Logger.warning(`${creep} can't be recycled, so it will be suicided.`);
         creep.suicide();
         return;
     }
