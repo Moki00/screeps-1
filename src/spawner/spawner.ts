@@ -19,6 +19,7 @@ import getHitsToBuild from '../utils/get-hits-to-build';
 import getHitsToRepair from '../utils/get-hits-to-repair';
 import Logger from '../utils/logger';
 import getBodyPartsCost from './helpers/get-body-parts-cost';
+import isCreepDangerous from './helpers/is-creep-dangerous';
 import stripBodyParts from './helpers/strip-body-parts';
 
 export default function updateSpawner(spawn: StructureSpawn) {
@@ -457,7 +458,9 @@ function doINeedRefiller(room: Room): boolean {
 }
 
 function doINeedDefender(room: Room): boolean {
-    return !!room.find(FIND_HOSTILE_CREEPS).length;
+    return room.find(FIND_HOSTILE_CREEPS)
+        .filter(isCreepDangerous)
+        .length > 0;
 }
 
 function doINeedHoover(room: Room): boolean {
