@@ -105,16 +105,16 @@ function spawnUpgraderCreep(spawn: StructureSpawn): void {
             [
                 MOVE, WORK,
                 WORK, MOVE,
+                CARRY, MOVE,
+                WORK, MOVE,
+                WORK, MOVE,
+                CARRY, MOVE,
+                WORK, MOVE,
                 WORK, MOVE,
                 WORK, MOVE,
                 WORK, MOVE,
                 CARRY, MOVE,
                 WORK, MOVE,
-                WORK, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                WORK, MOVE,
-                CARRY, MOVE,
             ],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
@@ -233,11 +233,11 @@ function spawnDefenderCreep(spawn: StructureSpawn): void {
     spawn.spawnCreep(
         stripBodyParts(
             [
-                ATTACK, ATTACK, MOVE,
-                ATTACK, ATTACK, MOVE,
-                ATTACK, ATTACK, MOVE,
-                ATTACK, ATTACK, MOVE,
-                ATTACK, ATTACK, MOVE,
+                ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE,
+                ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE,
+                ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE,
+                ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE,
+                ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE, ATTACK, MOVE,
             ],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
