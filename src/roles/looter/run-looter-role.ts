@@ -17,6 +17,10 @@ export default function runLooterRole(creep: Creep): void {
     }
 }
 
+export function getLootFlag(): Flag | undefined {
+    return Game.flags[LOOT_FLAG_NAME];
+}
+
 export function isLootFlagSet(): boolean {
     return !!Game.flags[LOOT_FLAG_NAME];
 }

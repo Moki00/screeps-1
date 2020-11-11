@@ -37,7 +37,7 @@ export function loot(creep: Creep): void {
     switch (withdrawCode) {
         case ERR_NOT_IN_RANGE:
             creep.moveTo(lootTarget, {
-                reusePath: 15,
+                reusePath: 50,
                 visualizePathStyle: getCreepPathStyle(creep),
             });
             break;

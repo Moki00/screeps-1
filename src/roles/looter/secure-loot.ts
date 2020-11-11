@@ -1,11 +1,18 @@
+import {getRoomWithMyClosestStorageFromPosition} from '../../constructions/rooms';
 import Logger from '../../utils/logger';
 import {getCreepPathStyle} from '../../visuals/config';
 import recycle from '../common/recycle';
 import LooterState from './looter-state';
 
 export function secureLoot(creep: Creep): void {
-    const homeRoom: Room = Game.rooms[creep.memory.originRoom];
-    const transferTarget: StructureStorage | undefined = homeRoom.storage;
+    const storageRoom: Room | undefined = getRoomWithMyClosestStorageFromPosition(creep.pos);
+
+    if (!storageRoom) {
+        Logger.warning('No storage room to secure loot!');
+        return;
+    }
+
+    const transferTarget: StructureStorage | undefined = storageRoom.storage;
     if (!transferTarget) {
         Logger.warning('No storage to secure loot!');
         return;

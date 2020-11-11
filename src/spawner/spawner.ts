@@ -31,12 +31,12 @@ export default function updateSpawner(spawn: StructureSpawn) {
         return;
     }
 
-    if (doINeedSettler(spawn.room)) {
-        spawnSettlerCreep(spawn);
-    }
-
     if (doINeedLooter(spawn.room)) {
         spawnLooterCreep(spawn);
+    }
+
+    if (doINeedSettler(spawn.room)) {
+        spawnSettlerCreep(spawn);
     }
 
     if (doINeedScout(spawn.room)) {
@@ -281,16 +281,11 @@ function spawnLooterCreep(spawn: StructureSpawn): void {
     spawn.spawnCreep(
         stripBodyParts(
             [
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
-                CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
+                CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE,
             ],
             {
                 maxEnergyCost: spawn.room.energyAvailable,
