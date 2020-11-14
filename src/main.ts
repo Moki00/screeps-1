@@ -38,6 +38,7 @@ import { updateVisualsToggles } from "./visuals/config";
 import drawCreepInfo from "./visuals/draw-creep-info";
 import { scanAndDrawRoleIcons } from "./visuals/draw-creep-role-icon";
 import drawSquadsVisual from "./visuals/draw-squads";
+import updateGeneratePixels from "./utils/update-generate-pixels";
 
 export const loop = (): void => {
   errorMapper(tick)();
@@ -84,6 +85,7 @@ const tick: () => void = () => {
   updateDeadSquadCreeps();
   cleanCreepsMemory();
 
+  updateGeneratePixels();
   Logger.info(
     `cpu: ${Math.ceil(Game.cpu.getUsed() * 100) / 100} / ${Game.cpu.limit} + ${
       Game.cpu.bucket
