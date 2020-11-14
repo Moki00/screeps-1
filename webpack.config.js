@@ -22,22 +22,6 @@ module.exports = {
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        enforce: 'pre',
-        use: [
-          {
-            loader: 'tslint-loader',
-            options: {
-              formatter: 'msbuild',
-            },
-          },
-          {
-            loader: "source-map-loader",
-          },
-        ],
-      },
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
         use: [
           {
             loader: 'ts-loader',

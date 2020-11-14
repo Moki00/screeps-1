@@ -1,6 +1,6 @@
 const DefenderRoleState = {
-    DANGER: 'attack',
-    SAFE: 'safe',
+  DANGER: "attack",
+  SAFE: "safe",
 };
 
 export default DefenderRoleState;

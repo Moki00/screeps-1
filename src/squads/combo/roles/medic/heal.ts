@@ -1,27 +1,31 @@
-import Logger from '../../../../utils/logger';
-import {getCreepPathStyle} from '../../../../visuals/config';
+import Logger from "../../../../utils/logger";
+import { getCreepPathStyle } from "../../../../visuals/config";
 
 export default function heal(creep: Creep): void {
-    if (!Memory.squads || !creep.memory.squadName) {
-        return;
-    }
+  if (!Memory.squads || !creep.memory.squadName) {
+    return;
+  }
 
-    const squad: SquadMemory = Memory.squads[creep.memory.squadName];
+  const squad: SquadMemory = Memory.squads[creep.memory.squadName];
 
-    if (!squad.targetToHealId) {
-        return;
-    }
+  if (!squad.targetToHealId) {
+    return;
+  }
 
-    const healTarget: Creep | null = Game.getObjectById<Creep>(squad.targetToHealId);
+  const healTarget: Creep | null = Game.getObjectById<Creep>(
+    squad.targetToHealId
+  );
 
-    if (!healTarget) {
-        Logger.warning(`"${squad.name}" has non existing heal target (id "${squad.targetToHealId}").`);
-        return;
-    }
+  if (!healTarget) {
+    Logger.warning(
+      `"${squad.name}" has non existing heal target (id "${squad.targetToHealId}").`
+    );
+    return;
+  }
 
-    creep.moveTo(healTarget, {
-        visualizePathStyle: getCreepPathStyle(creep),
-    });
-    creep.heal(healTarget);
-    creep.rangedHeal(healTarget);
+  creep.moveTo(healTarget, {
+    visualizePathStyle: getCreepPathStyle(creep),
+  });
+  creep.heal(healTarget);
+  creep.rangedHeal(healTarget);
 }

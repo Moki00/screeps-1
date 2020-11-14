@@ -1,3 +1,6 @@
-type AnyStorableStructure = StructureContainer | StructureStorage | StructureTerminal;
+type AnyStorableStructure =
+  | StructureContainer
+  | StructureStorage
+  | StructureTerminal;
 
 export default AnyStorableStructure;

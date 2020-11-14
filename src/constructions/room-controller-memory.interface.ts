@@ -1,7 +1,7 @@
-import SimpleRoomPosition from './simple-room-position.interface';
+import SimpleRoomPosition from "./simple-room-position.interface";
 
 export default interface RoomControllerMemory {
-    upgradingPosition: SimpleRoomPosition | null;
-    previousProgress: number;
-    transporterCreepId: string | null;
+  upgradingPosition: SimpleRoomPosition | null;
+  previousProgress: number;
+  transporterCreepId: string | null;
 }

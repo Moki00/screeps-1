@@ -1,0 +1,27 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "screeps/screeps": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "overrides": [
+    {
+      "files": ["*.spec.ts"],
+      "env": {
+        "jest": true
+      }
+    }
+  ],
+  "plugins": ["@typescript-eslint", "eslint-plugin-screeps"],
+  "rules": {}
+}
