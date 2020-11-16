@@ -57,6 +57,10 @@ export function getUpgraderContainer(
     | undefined;
 
   if (!container) {
+    Logger.warning(
+      `Upgrading position in ${room} has no container. Will rebuild it.`
+    );
+    createUpgradingSpot(room);
     return;
   }
 
