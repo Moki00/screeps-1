@@ -5,5 +5,5 @@ export default function getHitsToBuild(room: Room): number {
       (constructionSite) =>
         constructionSite.progressTotal - constructionSite.progress
     )
-    .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 }

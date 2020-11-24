@@ -1,8 +1,8 @@
 import createExtensionsContructionSites from "./constructions/extensions";
 import updateHarvestBases from "./constructions/harvest-base";
 import {
-  getMyClaimedRooms,
   getRoomWithMyClosestStorageFromPosition,
+  isRoomClaimedByMe,
   removeHostileStructuresAndConstructionSites,
   updateFirstSpawnsHelp,
 } from "./constructions/rooms";
@@ -39,6 +39,8 @@ import drawCreepInfo from "./visuals/draw-creep-info";
 import { scanAndDrawRoleIcons } from "./visuals/draw-creep-role-icon";
 import drawSquadsVisual from "./visuals/draw-squads";
 import updateGeneratePixels from "./utils/update-generate-pixels";
+import updateRoomBlueprints from "./room-blueprint/update-room-blueprints";
+import { initRoomBlueprintsCli } from "./room-blueprint/room-blueprint-cli";
 
 export const loop = (): void => {
   errorMapper(tick)();
@@ -47,34 +49,40 @@ export const loop = (): void => {
 const tick: () => void = () => {
   Logger.info(`tick ${Game.time}`);
 
+  initRoomBlueprintsCli();
+
   updateTickRateMeter();
   updateVisualsToggles();
   updateFirstSpawnsHelp();
 
   updateComboSquads();
 
-  getMyClaimedRooms().forEach((room) => {
-    updateRoomsToScout(room);
+  Object.values(Game.rooms).forEach((room) => {
+    if (isRoomClaimedByMe(room)) {
+      updateRoomsToScout(room);
 
-    removeHostileStructuresAndConstructionSites(room);
+      removeHostileStructuresAndConstructionSites(room);
 
-    const firstSpawn: StructureSpawn | undefined = room
-      .find(FIND_MY_SPAWNS)
-      .find(() => true);
-    if (!firstSpawn) {
-      return;
+      const firstSpawn: StructureSpawn | undefined = room
+        .find(FIND_MY_SPAWNS)
+        .find(() => true);
+      if (!firstSpawn) {
+        return;
+      }
+
+      createExtensionsContructionSites(room);
+      createTowersContructionSites(firstSpawn);
+      createStoragesConstructionSites(room);
+      updateSafeZones();
+      updateHarvestBases(room);
+      updateUpgradeBase(room);
+      updateSpawner(firstSpawn);
+      updateTerminal(room);
+      runTowers(room);
     }
-
-    createExtensionsContructionSites(room);
-    createTowersContructionSites(firstSpawn);
-    createStoragesConstructionSites(room);
-    updateSafeZones();
-    updateHarvestBases(room);
-    updateUpgradeBase(room);
-    updateSpawner(firstSpawn);
-    updateTerminal(room);
-    runTowers(room);
   });
+
+  updateRoomBlueprints();
 
   runSquads();
   runRoles();

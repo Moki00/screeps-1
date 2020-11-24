@@ -676,11 +676,11 @@ function doINeedBuilder(room: Room): boolean {
 
   const buildersWorkParts: number = builders
     .map((creep) => creep.getActiveBodyparts(WORK))
-    .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
   const buildersTicksToLive: number = builders
     .map((creep) => creep.ticksToLive || 0)
-    .reduce((accomulator, currentValue) => accomulator + currentValue, 0);
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
   const hitsToRepair: number = getHitsToRepair(room);
 
@@ -721,8 +721,8 @@ function doINeedHoover(room: Room): boolean {
   const allHooversCarryCapacity: number = room
     .find(FIND_MY_CREEPS)
     .filter((creep) => creep.memory.role === "hoover")
-    .reduce((carryCapacityAccomulator, currentCreep) => {
-      return carryCapacityAccomulator + currentCreep.carryCapacity;
+    .reduce((carryCapacityAccumulator, currentCreep) => {
+      return carryCapacityAccumulator + currentCreep.carryCapacity;
     }, 0);
 
   const resourcesToClean: ResourcesToClean = getSumOfResourcesToClean(room);

@@ -139,4 +139,5 @@ export const VISUAL_TOGGLES_KEYS = {
   SQUADS: "squads",
   SOURCES_MEMORY: "sourcesMemory",
   CREEPS_MEMORY: "creepsMemory",
+  ROOM_PLANNER: "roomPlanner",
 };

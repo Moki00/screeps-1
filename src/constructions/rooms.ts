@@ -6,6 +6,10 @@ export function getMyClaimedRooms(): Room[] {
   );
 }
 
+export function isRoomClaimedByMe(room: Room): boolean {
+  return !!room.controller && room.controller.my;
+}
+
 export function getMyClaimedRoomsWithNoSpawners(): Room[] {
   return getMyClaimedRooms().filter(
     (room) => room.find(FIND_MY_SPAWNS).length === 0

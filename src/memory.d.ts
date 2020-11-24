@@ -1,6 +1,7 @@
 import RoomControllerMemory from "./constructions/room-controller-memory.interface";
 import RoomSourcesMemory from "./constructions/room-sources-memory.interface";
 import SimpleRoomPosition from "./constructions/simple-room-position.interface";
+import RoomBlueprint from "./room-blueprint/room-blueprint-memory.interface";
 
 interface InternalCreepMoveMemory {
   dest: {
@@ -51,6 +52,7 @@ declare global {
     lastScoutUpdateTick?: number;
     roomsToScout: string[];
     remoteRooms: string[];
+    roomBlueprint?: RoomBlueprint;
   }
 
   interface AnotherRoomSettleHelp {
